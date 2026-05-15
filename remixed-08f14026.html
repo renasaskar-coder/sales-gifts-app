@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة المدير - إدارة الهدايا</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a73e8 0%, #1865c0 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .controls input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #1a73e8;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .controls button:hover {
+            background: #1865c0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f5f5f5;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        th {
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-print {
+            background: #34a853;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #2d8e47;
+        }
+
+        .btn-delete {
+            background: #ea4335;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #d33426;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-completed {
+            background: #c6e3b5;
+            color: #2d5016;
+        }
+
+        .badge-pending {
+            background: #fce8e6;
+            color: #a50e0e;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tabs button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .filter-tabs button.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+
+        .filter-tabs button:hover {
+            border-color: #1a73e8;
+            color: #1a73e8;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .controls input,
+            .controls button {
+                width: 100%;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        .print-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .print-modal.show {
+            display: flex;
+        }
+
+        .print-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .print-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .print-content th,
+        .print-content td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: right;
+        }
+
+        .print-content th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .print-header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .print-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ea4335;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .header, .controls, .filter-tabs, .print-close {
+                display: none !important;
+            }
+
+            .print-content {
+                max-width: 100%;
+                padding: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- الرأس -->
+        <div class="header">
+            <h1>👨‍💼 لوحة المدير</h1>
+            <p>إدارة وتتبع جميع وصلات الهدايا</p>
+        </div>
+
+        <!-- الإحصائيات -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" id="totalRecords">0</div>
+                <div class="label">إجمالي الوصلات</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalSales">0</div>
+                <div class="label">إجمالي المبيعات</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalGifts">0</div>
+                <div class="label">إجمالي الهدايا</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalSalespeople">19</div>
+                <div class="label">عدد المندوبين</div>
+            </div>
+        </div>
+
+        <!-- التحكم والبحث -->
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="🔍 ابحث عن محل أو مندوب..." 
+                   onkeyup="filterTable()">
+            <div style="display: flex; gap: 10px;">
+                <button onclick="printAll()">🖨️ طباعة الكل</button>
+                <button onclick="exportCSV()" style="background: #34a853;">📥 تصدير CSV</button>
+                <button onclick="refreshData()" style="background: #757575;">🔄 تحديث</button>
+            </div>
+        </div>
+
+        <!-- علامات التصفية -->
+        <div class="filter-tabs">
+            <button class="active" onclick="filterByDate('all')">الكل</button>
+            <button onclick="filterByDate('today')">اليوم</button>
+            <button onclick="filterByDate('week')">هذا الأسبوع</button>
+            <button onclick="filterByDate('month')">هذا الشهر</button>
+        </div>
+
+        <!-- الجدول -->
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>كود المحل</th>
+                        <th>اسم المندوب</th>
+                        <th>اسم المحل</th>
+                        <th>الهاتف</th>
+                        <th>المبيعات</th>
+                        <th>الهدية</th>
+                        <th>العدد</th>
+                        <th>التاريخ</th>
+                        <th>الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px;">
+                            جاري تحميل البيانات...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- نافذة الطباعة -->
+    <div id="printModal" class="print-modal">
+        <button class="print-close" onclick="closePrintModal()">✕</button>
+        <div class="print-content" id="printContent"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // 1. متغيرات البيانات
+        // ============================================
+        let allData = [];
+        let filteredData = [];
+
+        // ============================================
+        // 2. تحميل البيانات (من localStorage في البداية)
+        // ============================================
+        function loadData() {
+            // في التطبيق الفعلي، ستأتي من Google Sheets
+            const savedData = localStorage.getItem('allTourRecords');
+            if (savedData) {
+                allData = JSON.parse(savedData);
+            } else {
+                // بيانات عينة
+                allData = [
+                    {
+                        storeCode: 'KR00001',
+                        salesperson: 'أحمد محمد',
+                        storeName: 'محل الريحان',
+                        phone: '0501234567',
+                        salesCount: 15,
+                        giftType: 'علب 250 مل',
+                        giftCount: 10,
+                        date: new Date().toLocaleDateString('ar-SA')
+                    },
+                    {
+                        storeCode: 'KR00002',
+                        salesperson: 'علي حسن',
+                        storeName: 'محل النوره',
+                        phone: '0502345678',
+                        salesCount: 12,
+                        giftType: 'زجاج 250 مل',
+                        giftCount: 8,
+                        date: new Date().toLocaleDateString('ar-SA')
+                    }
+                ];
+            }
+
+            filteredData = [...allData];
+            updateTable();
+            updateStats();
+        }
+
+        // ============================================
+        // 3. تحديث الجدول
+        // ============================================
+        function updateTable() {
+            const tbody = document.getElementById('tableBody');
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px;">
+                            <div class="empty-state">
+                                <p>📭 لا توجد بيانات</p>
+                                <p style="font-size: 12px; color: #ccc;">ابدأ بتسجيل المندوبين</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredData.map((record, index) => `
+                <tr>
+                    <td><strong>${record.storeCode}</strong></td>
+                    <td>${record.salesperson}</td>
+                    <td>${record.storeName}</td>
+                    <td>${record.phone}</td>
+                    <td>${record.salesCount}</td>
+                    <td>${record.giftType}</td>
+                    <td>${record.giftCount}</td>
+                    <td>${record.date}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-small btn-print" onclick="printRecord(${index})">🖨️</button>
+                            <button class="btn-small btn-delete" onclick="deleteRecord(${index})">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ============================================
+        // 4. تحديث الإحصائيات
+        // ============================================
+        function updateStats() {
+            document.getElementById('totalRecords').textContent = filteredData.length;
+            document.getElementById('totalSales').textContent = 
+                filteredData.reduce((sum, r) => sum + r.salesCount, 0);
+            document.getElementById('totalGifts').textContent = 
+                filteredData.reduce((sum, r) => sum + r.giftCount, 0);
+        }
+
+        // ============================================
+        // 5. البحث والتصفية
+        // ============================================
+        function filterTable() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            filteredData = allData.filter(record => 
+                record.storeCode.toLowerCase().includes(search) ||
+                record.salesperson.toLowerCase().includes(search) ||
+                record.storeName.toLowerCase().includes(search)
+            );
+            updateTable();
+            updateStats();
+        }
+
+        // ============================================
+        // 6. التصفية بالتاريخ
+        // ============================================
+        function filterByDate(period) {
+            const today = new Date();
+            const todayStr = today.toLocaleDateString('ar-SA');
+
+            if (period === 'all') {
+                filteredData = [...allData];
+            } else if (period === 'today') {
+                filteredData = allData.filter(r => r.date === todayStr);
+            } else {
+                // تصفية أسبوعية وشهرية
+                filteredData = allData;
+            }
+
+            updateTable();
+            updateStats();
+
+            // تحديث الزر النشط
+            event.target.parentElement.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // ============================================
+        // 7. حذف السجل
+        // ============================================
+        function deleteRecord(index) {
+            if (confirm('هل تريد حذف هذا السجل؟')) {
+                allData.splice(index, 1);
+                localStorage.setItem('allTourRecords', JSON.stringify(allData));
+                loadData();
+            }
+        }
+
+        // ============================================
+        // 8. طباعة سجل واحد
+        // ============================================
+        function printRecord(index) {
+            const record = filteredData[index];
+            const html = generateReceiptHTML([record]);
+            showPrintModal(html);
+        }
+
+        // ============================================
+        // 9. طباعة الكل
+        // ============================================
+        function printAll() {
+            if (filteredData.length === 0) {
+                alert('❌ لا توجد بيانات للطباعة');
+                return;
+            }
+            const html = generateReceiptHTML(filteredData);
+            showPrintModal(html);
+        }
+
+        // ============================================
+        // 10. إنشاء HTML الطباعة
+        // ============================================
+        function generateReceiptHTML(records) {
+            return `
+                <div class="print-header">
+                    📋 وصل هدايا المبيعات
+                    <div style="font-size: 12px; margin-top: 5px;">
+                        التاريخ: ${new Date().toLocaleDateString('ar-SA')}
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>كود المحل</th>
+                            <th>اسم المندوب</th>
+                            <th>اسم المحل</th>
+                            <th>الهاتف</th>
+                            <th>المبيعات</th>
+                            <th>نوع الهدية</th>
+                            <th>العدد</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${records.map(r => `
+                            <tr>
+                                <td>${r.storeCode}</td>
+                                <td>${r.salesperson}</td>
+                                <td>${r.storeName}</td>
+                                <td>${r.phone}</td>
+                                <td>${r.salesCount}</td>
+                                <td>${r.giftType}</td>
+                                <td>${r.giftCount}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 40px; text-align: right;">
+                    <div style="margin-bottom: 20px;">التوقيع: ________________</div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // 11. عرض نافذة الطباعة
+        // ============================================
+        function showPrintModal(html) {
+            document.getElementById('printContent').innerHTML = html;
+            document.getElementById('printModal').classList.add('show');
+        }
+
+        // ============================================
+        // 12. إغلاق نافذة الطباعة
+        // ============================================
+        function closePrintModal() {
+            document.getElementById('printModal').classList.remove('show');
+        }
+
+        // ============================================
+        // 13. تصدير CSV
+        // ============================================
+        function exportCSV() {
+            let csv = 'كود المحل,اسم المندوب,اسم المحل,الهاتف,المبيعات,الهدية,العدد,التاريخ\n';
+            filteredData.forEach(record => {
+                csv += `${record.storeCode},${record.salesperson},${record.storeName},${record.phone},${record.salesCount},${record.giftType},${record.giftCount},${record.date}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `sales-gifts-${Date.now()}.csv`);
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================
+        // 14. تحديث البيانات
+        // ============================================
+        function refreshData() {
+            loadData();
+            alert('✅ تم تحديث البيانات');
+        }
+
+        // ============================================
+        // 15. تهيئة التطبيق
+        // ============================================
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+        });
+
+        // إغلاق نافذة الطباعة عند الضغط على ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closePrintModal();
+            }
+        });
+    </script>
+</body>
+</html>
