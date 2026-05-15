@@ -382,8 +382,8 @@ border-radius: 0;
 <!-- كود المحل -->
 
 <div class="form-group">
-<label for="storeCode">كود المحل (KR#####) *</label>
-<input type="text" id="storeCode" placeholder="مثال: KR00001" required onblur="lookupStore()">
+<label for="storeCode">كود المحل (kr#####) *</label>
+<input type="text" id="storeCode" placeholder="مثال: kr00001" required onblur="lookupStore()" oninput="lookupStore()">
 </div>
 
 <!-- بيانات المحل (مجلوبة تلقائياً) -->
@@ -460,9 +460,8 @@ border-radius: 0;
 <h2 style="margin-bottom: 20px; font-size: 18px;">ℹ️ معلومات التطبيق</h2>
 
 <div style="font-size: 14px; line-height: 1.8; color: #666;">
-<p><strong>الإصدار:</strong> 2.0.0 (مع Firebase)</p>
+<p><strong>الإصدار:</strong> 3.0.0 (مع قاعدة بيانات المحلات)</p>
 <p><strong>الوضع:</strong> <span id="appMode">متصل</span></p>
-<p><strong>حالة Firebase:</strong> <span id="firebaseStatus">جاري الاتصال...</span></p>
 
 <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
 
@@ -470,9 +469,10 @@ border-radius: 0;
 
 <ul style="margin-right: 20px; margin-top: 10px;">
 <li>✅ العمل بدون إنترنت (Offline)</li>
-<li>✅ تزامن تلقائي مع Firebase</li>
-<li>✅ عرض البيانات في لوحة المدير</li>
+<li>✅ جلب بيانات المحل تلقائياً</li>
+<li>✅ قائمة محدثة من المندوبين</li>
 <li>✅ طباعة الوصلات بسهولة</li>
+<li>✅ تصدير البيانات</li>
 <li>✅ دعم iOS و Android</li>
 </ul>
 
@@ -485,33 +485,55 @@ border-radius: 0;
 </div>
 </div>
 
-<!-- Firebase Scripts -->
-
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-
 <script>
 // ============================================
-// 1. تهيئة Firebase
+// 1. قاعدة بيانات المحلات والمندوبين
 // ============================================
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB401UuTPDdPDPsSWzyJyOdp8R9g4n2oEI",
-  authDomain: "sales-gifts-app.firebaseapp.com",
-  databaseURL: "https://sales-gifts-app-default-rtdb.firebaseio.com",
-  projectId: "sales-gifts-app",
-  storageBucket: "sales-gifts-app.firebasestorage.app",
-  messagingSenderId: "16013682466",
-  appId: "1:16013682466:web:dca854eba27943c45c677b",
-  measurementId: "G-VZCM464832"
+const storesDatabase = {
+  'kr00001': { name: 'محل الريحان', phone: '0501234567', salesperson: '' },
+  'kr00002': { name: 'محل النوره', phone: '0502345678', salesperson: '' },
+  'kr00003': { name: 'محل الرفعة', phone: '0503456789', salesperson: '' },
+  'kr00004': { name: 'محل الجود', phone: '0504567890', salesperson: '' },
+  'kr00005': { name: 'محل النقاء', phone: '0505678901', salesperson: '' },
+  'kr00006': { name: 'محل الفرح', phone: '0506789012', salesperson: '' },
+  'kr00007': { name: 'محل البركة', phone: '0507890123', salesperson: '' },
+  'kr00008': { name: 'محل الأمل', phone: '0508901234', salesperson: '' },
+  'kr00009': { name: 'محل النور', phone: '0509012345', salesperson: '' },
+  'kr00010': { name: 'محل القمة', phone: '0501234568', salesperson: '' },
+  'kr00011': { name: 'محل النجم', phone: '0501234569', salesperson: '' },
+  'kr00012': { name: 'محل الزهرة', phone: '0501234570', salesperson: '' },
+  'kr00013': { name: 'محل الشرق', phone: '0501234571', salesperson: '' },
+  'kr00014': { name: 'محل الغرب', phone: '0501234572', salesperson: '' },
+  'kr00015': { name: 'محل الشمال', phone: '0501234573', salesperson: '' },
+  'kr00016': { name: 'محل الجنوب', phone: '0501234574', salesperson: '' },
+  'kr00017': { name: 'محل المركز', phone: '0501234575', salesperson: '' },
+  'kr00018': { name: 'محل الحياة', phone: '0501234576', salesperson: '' },
+  'kr00019': { name: 'محل الأسرة', phone: '0501234577', salesperson: '' },
+  'kr00020': { name: 'محل الصداقة', phone: '0501234578', salesperson: '' },
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const salespeople = [
+  'نوزاد فاروق',
+  'شالاو نوزاد',
+  'سيوان',
+  'شالاو شريف',
+  'مصطفى',
+  'عبد الله كيفي',
+  'هيوا',
+  'محمد غالب',
+  'ياد',
+  'ئاريان',
+  'ئالان',
+  'علي',
+  'ابراهيم',
+  'رابه ر',
+  'عبد الله عادل',
+  'اميد',
+  'محمد نوري',
+  'محمد محسن',
+  'محمود'
+];
 
 // ============================================
 // 2. المتغيرات الأساسية
@@ -521,25 +543,24 @@ let isOnline = navigator.onLine;
 let currentTourId = 'TOUR-' + Date.now();
 let userId = localStorage.getItem('userId') || 'user-' + Date.now();
 let tourData = {
-tourId: currentTourId,
-customers: []
+  tourId: currentTourId,
+  customers: []
 };
 
-// حفظ معرف المستخدم
 localStorage.setItem('userId', userId);
 
 // تحميل البيانات من localStorage
 function loadTourData() {
-const saved = localStorage.getItem('currentTour');
-if (saved) {
-tourData = JSON.parse(saved);
-currentTourId = tourData.tourId;
-}
+  const saved = localStorage.getItem('currentTour');
+  if (saved) {
+    tourData = JSON.parse(saved);
+    currentTourId = tourData.tourId;
+  }
 }
 
 // حفظ البيانات في localStorage
 function saveTourData() {
-localStorage.setItem('currentTour', JSON.stringify(tourData));
+  localStorage.setItem('currentTour', JSON.stringify(tourData));
 }
 
 // ============================================
@@ -547,316 +568,225 @@ localStorage.setItem('currentTour', JSON.stringify(tourData));
 // ============================================
 
 window.addEventListener('online', () => {
-isOnline = true;
-updateStatusBar();
-syncDataToFirebase();
+  isOnline = true;
+  updateStatusBar();
 });
 
 window.addEventListener('offline', () => {
-isOnline = false;
-updateStatusBar();
+  isOnline = false;
+  updateStatusBar();
 });
 
 function updateStatusBar() {
-const dot = document.getElementById('statusDot');
-const text = document.getElementById('statusText');
-const mode = document.getElementById('appMode');
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  const mode = document.getElementById('appMode');
 
-if (isOnline) {
-dot.classList.remove('offline');
-text.textContent = 'متصل 🌐';
-mode.textContent = 'متصل';
-} else {
-dot.classList.add('offline');
-text.textContent = 'بدون إنترنت 📡';
-mode.textContent = 'بدون إنترنت (جميع البيانات تُحفظ محلياً)';
-}
+  if (isOnline) {
+    dot.classList.remove('offline');
+    text.textContent = 'متصل 🌐';
+    mode.textContent = 'متصل';
+  } else {
+    dot.classList.add('offline');
+    text.textContent = 'بدون إنترنت 📡';
+    mode.textContent = 'بدون إنترنت (جميع البيانات تُحفظ محلياً)';
+  }
 }
 
 // ============================================
 // 4. تحميل قائمة المندوبين
 // ============================================
 
-async function loadSalespeople() {
-const salespeople = [
-'أحمد محمد', 'علي حسن', 'محمود إبراهيم', 'سارة أحمد',
-'فاطمة محمود', 'خالد علي', 'ياسمين حسن', 'عمرو إبراهيم',
-'لينا محمد', 'طارق حسن', 'دينا علي', 'محمد سارة',
-'نورا أحمد', 'رامي إبراهيم', 'هبة محمود', 'إبراهيم علي',
-'مريم حسن', 'جمال محمد', 'سمر أحمد'
-];
-
-const select = document.getElementById('salesperson');
-salespeople.forEach(name => {
-const option = document.createElement('option');
-option.value = name;
-option.textContent = name;
-select.appendChild(option);
-});
+function loadSalespeople() {
+  const select = document.getElementById('salesperson');
+  salespeople.forEach(name => {
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = name;
+    select.appendChild(option);
+  });
 }
 
 // ============================================
 // 5. البحث عن بيانات المحل
 // ============================================
 
-async function lookupStore() {
-const storeCode = document.getElementById('storeCode').value.trim().toUpperCase();
+function lookupStore() {
+  const storeCode = document.getElementById('storeCode').value.trim().toLowerCase();
 
-if (!/^KR\d{5}$/.test(storeCode)) {
-document.getElementById('storeInfoContainer').style.display = 'none';
-return;
-}
+  if (!/^kr\d{5}$/.test(storeCode)) {
+    document.getElementById('storeInfoContainer').style.display = 'none';
+    return;
+  }
 
-// بيانات عينة (يمكن ربطها بـ Google Sheets أو Firebase)
-const stores = {
-'KR00001': { name: 'محل الريحان', phone: '0501234567' },
-'KR00002': { name: 'محل النوره', phone: '0502345678' },
-'KR00003': { name: 'محل الرفعة', phone: '0503456789' },
-'KR00004': { name: 'محل الجود', phone: '0504567890' },
-'KR00005': { name: 'محل النقاء', phone: '0505678901' },
-'KR00006': { name: 'محل الفرح', phone: '0506789012' },
-'KR00007': { name: 'محل البركة', phone: '0507890123' },
-'KR00008': { name: 'محل الأمل', phone: '0508901234' },
-'KR00009': { name: 'محل النور', phone: '0509012345' },
-'KR00010': { name: 'محل القمة', phone: '0501234568' },
-};
-
-if (stores[storeCode]) {
-const store = stores[storeCode];
-document.getElementById('storeName').textContent = store.name;
-document.getElementById('storePhone').textContent = store.phone;
-document.getElementById('storeInfoContainer').style.display = 'block';
-} else {
-document.getElementById('storeInfoContainer').style.display = 'none';
-showMessage('entryMessage', 'تحذير: كود المحل غير موجود في القاعدة', 'error');
-}
+  if (storesDatabase[storeCode]) {
+    const store = storesDatabase[storeCode];
+    document.getElementById('storeName').textContent = store.name;
+    document.getElementById('storePhone').textContent = store.phone;
+    document.getElementById('storeInfoContainer').style.display = 'block';
+  } else {
+    document.getElementById('storeInfoContainer').style.display = 'none';
+    showMessage('entryMessage', 'تحذير: كود المحل غير موجود في القاعدة', 'error');
+  }
 }
 
 // ============================================
-// 6. إضافة عميل وإرسال البيانات إلى Firebase
+// 6. إضافة عميل
 // ============================================
 
 function addCustomer(event) {
-event.preventDefault();
+  event.preventDefault();
 
-const submitBtn = document.getElementById('submitBtn');
-submitBtn.disabled = true;
-submitBtn.innerHTML = '<span class="loading"></span> جاري الإضافة...';
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="loading"></span> جاري الإضافة...';
 
-const salesperson = document.getElementById('salesperson').value;
-const storeCode = document.getElementById('storeCode').value.toUpperCase();
-const storeName = document.getElementById('storeName').textContent;
-const phone = document.getElementById('storePhone').textContent;
-const salesCount = document.getElementById('salesCount').value;
-const giftType = document.getElementById('giftType').value;
-const giftCount = document.getElementById('giftCount').value;
+  const salesperson = document.getElementById('salesperson').value;
+  const storeCode = document.getElementById('storeCode').value.toLowerCase();
+  const storeName = document.getElementById('storeName').textContent;
+  const phone = document.getElementById('storePhone').textContent;
+  const salesCount = document.getElementById('salesCount').value;
+  const giftType = document.getElementById('giftType').value;
+  const giftCount = document.getElementById('giftCount').value;
 
-// التحقق من البيانات
-if (!salesperson || !storeCode || !storeName || !salesCount || !giftType || !giftCount) {
-showMessage('entryMessage', '❌ الرجاء ملء جميع الحقول', 'error');
-submitBtn.disabled = false;
-submitBtn.innerHTML = '➕ إضافة العميل';
-return;
-}
+  // التحقق من البيانات
+  if (!salesperson || !storeCode || !storeName || !salesCount || !giftType || !giftCount) {
+    showMessage('entryMessage', '❌ الرجاء ملء جميع الحقول', 'error');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '➕ إضافة العميل';
+    return;
+  }
 
-// إنشاء كائن العميل
-const customer = {
-id: 'CUST-' + Date.now(),
-salesperson,
-storeCode,
-storeName,
-phone,
-salesCount: parseInt(salesCount),
-giftType,
-giftCount: parseInt(giftCount),
-date: new Date().toISOString(),
-userId: userId
-};
+  // إنشاء كائن العميل
+  const customer = {
+    id: 'CUST-' + Date.now(),
+    salesperson,
+    storeCode,
+    storeName,
+    phone,
+    salesCount: parseInt(salesCount),
+    giftType,
+    giftCount: parseInt(giftCount),
+    date: new Date().toISOString(),
+    userId: userId
+  };
 
-// إضافة العميل محلياً
-tourData.customers.push(customer);
-saveTourData();
+  // إضافة العميل محلياً
+  tourData.customers.push(customer);
+  saveTourData();
 
-// إرسال البيانات إلى Firebase
-if (isOnline) {
-sendToFirebase(customer);
-} else {
-showMessage('entryMessage', '✅ تم إضافة العميل (سيتم المزامنة عند الاتصال)', 'success');
-submitBtn.disabled = false;
-submitBtn.innerHTML = '➕ إضافة العميل';
-document.getElementById('entryForm').reset();
-document.getElementById('storeInfoContainer').style.display = 'none';
-updateTourDisplay();
-setTimeout(() => { document.getElementById('entryMessage').innerHTML = ''; }, 2000);
-}
-}
-
-// إرسال البيانات إلى Firebase
-function sendToFirebase(customer) {
-const customerRef = db.ref('tours/' + currentTourId + '/customers/' + customer.id);
-
-customerRef.set(customer, function(error) {
-const submitBtn = document.getElementById('submitBtn');
-submitBtn.disabled = false;
-submitBtn.innerHTML = '➕ إضافة العميل';
-
-if (error) {
-showMessage('entryMessage', '❌ حدث خطأ في الإرسال: ' + error.message, 'error');
-console.error('Firebase Error:', error);
-} else {
-showMessage('entryMessage', '✅ تم إضافة العميل وإرساله بنجاح', 'success');
-document.getElementById('entryForm').reset();
-document.getElementById('storeInfoContainer').style.display = 'none';
-updateTourDisplay();
-setTimeout(() => { document.getElementById('entryMessage').innerHTML = ''; }, 2000);
-}
-});
+  showMessage('entryMessage', '✅ تم إضافة العميل بنجاح', 'success');
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = '➕ إضافة العميل';
+  document.getElementById('entryForm').reset();
+  document.getElementById('storeInfoContainer').style.display = 'none';
+  updateTourDisplay();
+  setTimeout(() => { document.getElementById('entryMessage').innerHTML = ''; }, 2000);
 }
 
 // ============================================
-// 7. مزامنة البيانات إلى Firebase
-// ============================================
-
-function syncDataToFirebase() {
-if (!isOnline || tourData.customers.length === 0) return;
-
-const unsentCustomers = tourData.customers.filter(c => !c.synced);
-
-unsentCustomers.forEach(customer => {
-sendToFirebase(customer);
-customer.synced = true;
-});
-
-saveTourData();
-}
-
-// ============================================
-// 8. تحديث عرض بيانات الجولة
+// 7. تحديث عرض بيانات الجولة
 // ============================================
 
 function updateTourDisplay() {
-const customersList = document.getElementById('customersList');
-const summary = document.getElementById('tourSummary');
-const emptyState = document.getElementById('emptyTour');
-const tourActions = document.getElementById('tourActions');
+  const customersList = document.getElementById('customersList');
+  const summary = document.getElementById('tourSummary');
+  const emptyState = document.getElementById('emptyTour');
+  const tourActions = document.getElementById('tourActions');
 
-if (tourData.customers.length === 0) {
-customersList.innerHTML = '';
-summary.style.display = 'none';
-emptyState.style.display = 'block';
-tourActions.style.display = 'none';
-return;
-}
+  if (tourData.customers.length === 0) {
+    customersList.innerHTML = '';
+    summary.style.display = 'none';
+    emptyState.style.display = 'block';
+    tourActions.style.display = 'none';
+    return;
+  }
 
-// عرض الملخص
-const totalGifts = tourData.customers.reduce((sum, c) => sum + c.giftCount, 0);
-document.getElementById('customerCount').textContent = tourData.customers.length;
-document.getElementById('totalGifts').textContent = totalGifts;
-summary.style.display = 'block';
-emptyState.style.display = 'none';
-tourActions.style.display = 'block';
+  // عرض الملخص
+  const totalGifts = tourData.customers.reduce((sum, c) => sum + c.giftCount, 0);
+  document.getElementById('customerCount').textContent = tourData.customers.length;
+  document.getElementById('totalGifts').textContent = totalGifts;
+  summary.style.display = 'block';
+  emptyState.style.display = 'none';
+  tourActions.style.display = 'block';
 
-// عرض العملاء
-customersList.innerHTML = tourData.customers.map((customer, index) => `
-<div class="customer-item">
-<button class="remove-btn" onclick="removeCustomer(${index})">✕</button>
-<h3>${customer.storeName} <span style="font-size: 12px; color: #999;">(${customer.storeCode})</span></h3>
-<p>👤 المندوب: <strong>${customer.salesperson}</strong></p>
-<p>📱 الهاتف: <strong>${customer.phone}</strong></p>
-<p>📊 المبيعات: <strong>${customer.salesCount}</strong></p>
-<p>🎁 الهدية: <strong>${customer.giftType}</strong> × ${customer.giftCount}</p>
-<p style="font-size: 11px; color: #ccc; margin-top: 5px;">${customer.synced ? '✓ مرسل' : '⏳ في الانتظار'}</p>
-</div>
-`).join('');
+  // عرض العملاء
+  customersList.innerHTML = tourData.customers.map((customer, index) => `
+    <div class="customer-item">
+      <button class="remove-btn" onclick="removeCustomer(${index})">✕</button>
+      <h3>${customer.storeName} <span style="font-size: 12px; color: #999;">(${customer.storeCode})</span></h3>
+      <p>👤 المندوب: <strong>${customer.salesperson}</strong></p>
+      <p>📱 الهاتف: <strong>${customer.phone}</strong></p>
+      <p>📊 المبيعات: <strong>${customer.salesCount}</strong></p>
+      <p>🎁 الهدية: <strong>${customer.giftType}</strong> × ${customer.giftCount}</p>
+    </div>
+  `).join('');
 }
 
 // ============================================
-// 9. حذف عميل
+// 8. حذف عميل
 // ============================================
 
 function removeCustomer(index) {
-if (confirm('هل تريد حذف هذا العميل؟')) {
-const customer = tourData.customers[index];
-tourData.customers.splice(index, 1);
-saveTourData();
-
-// حذف من Firebase إذا كان مرسلاً
-if (customer.synced && isOnline) {
-db.ref('tours/' + currentTourId + '/customers/' + customer.id).remove();
-}
-
-updateTourDisplay();
-}
+  if (confirm('هل تريد حذف هذا العميل؟')) {
+    tourData.customers.splice(index, 1);
+    saveTourData();
+    updateTourDisplay();
+  }
 }
 
 // ============================================
-// 10. إنهاء الجولة وطباعة الوصل
+// 9. إنهاء الجولة وطباعة الوصل
 // ============================================
 
 function endTour() {
-if (tourData.customers.length === 0) {
-alert('❌ لا توجد عملاء لإنهاء الجولة');
-return;
-}
+  if (tourData.customers.length === 0) {
+    alert('❌ لا توجد عملاء لإنهاء الجولة');
+    return;
+  }
 
-// إنشاء الوصل وطباعته
-generateReceipt();
+  // إنشاء الوصل وطباعته
+  generateReceipt();
 
-// تنظيف البيانات بعد الطباعة
-setTimeout(() => {
-if (confirm('هل تريد بدء جولة جديدة؟')) {
-clearTour();
-}
-}, 500);
+  // تنظيف البيانات بعد الطباعة
+  setTimeout(() => {
+    if (confirm('هل تريد بدء جولة جديدة؟')) {
+      clearTour();
+    }
+  }, 500);
 }
 
 // ============================================
-// 11. إنشاء الوصل وطباعته
+// 10. إنشاء الوصل وطباعته
 // ============================================
 
 function generateReceipt() {
-const now = new Date().toLocaleDateString('ar-SA');
-let html = `
-<html dir="rtl">
-<head>
-<meta charset="UTF-8">
-<title>وصل الهدايا</title>
-<style>
-body { font-family: Arial; padding: 20px; }
-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-th, td { border: 1px solid #333; padding: 8px; text-align: right; }
-th { background: #f0f0f0; font-weight: bold; }
-.header { text-align: center; margin-bottom: 20px; font-weight: bold; }
-.signature { height: 40px; border-top: 1px solid #333; display: inline-block; width: 150px; margin: 20px 20px; }
-.page-break { page-break-after: always; }
-</style>
+  const now = new Date().toLocaleDateString('ar-SA');
+  let html = `
+    <html dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>وصل الهدايا</title>
+      <style>
+        body { font-family: Arial; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: right; }
+        th { background: #f0f0f0; font-weight: bold; }
+        .header { text-align: center; margin-bottom: 20px; font-weight: bold; }
+        .signature { height: 40px; border-top: 1px solid #333; display: inline-block; width: 150px; margin: 20px 20px; }
+        .page-break { page-break-after: always; }
+      </style>
 
+```
 </head>
 <body>
+```
+
 `;
 
 // طباعة كل وصل مرتين
 for (let copies = 0; copies < 2; copies++) {
-html += `
-
-<div class="header">
-<div style="margin-bottom: 10px;">📋 وصل هدايا المبيعات</div>
-<div style="font-size: 12px;">التاريخ: ${now}</div>
-</div>
-<table>
-<thead>
-<tr>
-<th>كود المحل</th>
-<th>اسم المندوب</th>
-<th>اسم المحل</th>
-<th>الهاتف</th>
-<th>المبيعات</th>
-<th>نوع الهدية</th>
-<th>العدد</th>
-</tr>
-</thead>
-<tbody>
-${tourData.customers.map(c => `
+html += `<div class="header"> <div style="margin-bottom: 10px;">📋 وصل هدايا المبيعات</div> <div style="font-size: 12px;">التاريخ: ${now}</div> </div> <table> <thead> <tr> <th>كود المحل</th> <th>اسم المندوب</th> <th>اسم المحل</th> <th>الهاتف</th> <th>المبيعات</th> <th>نوع الهدية</th> <th>العدد</th> </tr> </thead> <tbody> ${tourData.customers.map(c =>`
 <tr>
 <td>${c.storeCode}</td>
 <td>${c.salesperson}</td>
@@ -866,17 +796,14 @@ ${tourData.customers.map(c => `
 <td>${c.giftType}</td>
 <td>${c.giftCount}</td>
 </tr>
-`).join('')}
-</tbody>
-</table>
-<div style="text-align: right; margin-top: 30px;">
-<div>التوقيع: <span class="signature"></span></div>
-</div>
-`;
+`).join('')} </tbody> </table> <div style="text-align: right; margin-top: 30px;"> <div>التوقيع: <span class="signature"></span></div> </div> `;
 
+```
 if (copies === 0) {
-html += ‘<div class="page-break"></div>’;
+  html += '<div class="page-break"></div>';
 }
+```
+
 }
 
 html += ‘</body></html>’;
@@ -889,16 +816,11 @@ printWindow.print();
 }
 
 // ============================================
-// 12. مسح الجولة
+// 11. مسح الجولة
 // ============================================
 
 function clearTour() {
 if (confirm(‘هل تريد حذف جميع بيانات الجولة؟’)) {
-// حذف من Firebase
-if (isOnline) {
-db.ref(‘tours/’ + currentTourId).remove();
-}
-
 tourData.customers = [];
 currentTourId = ‘TOUR-’ + Date.now();
 tourData.tourId = currentTourId;
@@ -912,7 +834,7 @@ setTimeout(() => { document.getElementById(‘entryMessage’).innerHTML = ‘�
 }
 
 // ============================================
-// 13. التبديل بين التبويبات
+// 12. التبديل بين التبويبات
 // ============================================
 
 function switchTab(tabName) {
@@ -932,7 +854,7 @@ updateTourDisplay();
 }
 
 // ============================================
-// 14. رسائل التنبيهات
+// 13. رسائل التنبيهات
 // ============================================
 
 function showMessage(elementId, message, type) {
@@ -942,7 +864,7 @@ element.innerHTML = `<div class="${className}">${message}</div>`;
 }
 
 // ============================================
-// 15. تصدير البيانات
+// 14. تصدير البيانات
 // ============================================
 
 function exportData() {
@@ -963,20 +885,7 @@ URL.revokeObjectURL(url);
 }
 
 // ============================================
-// 16. تهيئة Firebase
-// ============================================
-
-firebase.auth().signInAnonymously().then(() => {
-console.log(‘✅ تم الاتصال بـ Firebase’);
-document.getElementById(‘firebaseStatus’).textContent = ‘✅ متصل’;
-syncDataToFirebase();
-}).catch((error) => {
-console.error(‘❌ خطأ في الاتصال بـ Firebase:’, error);
-document.getElementById(‘firebaseStatus’).textContent = ‘❌ خطأ في الاتصال’;
-});
-
-// ============================================
-// 17. تهيئة التطبيق
+// 15. تهيئة التطبيق
 // ============================================
 
 window.addEventListener(‘DOMContentLoaded’, () => {
@@ -985,13 +894,6 @@ loadSalespeople();
 updateStatusBar();
 updateTourDisplay();
 });
-
-// تسجيل Service Worker
-if (‘serviceWorker’ in navigator) {
-navigator.serviceWorker.register(‘sw.js’).catch(err => {
-console.log(‘Service Worker غير متاح’);
-});
-}
 </script>
 
 </body>
