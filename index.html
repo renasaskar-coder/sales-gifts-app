@@ -6,477 +6,186 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1a73e8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>نظام إدارة هدايا المبيعات</title>
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-font-family: ‘Segoe UI’, Tahoma, Geneva, Verdana, sans-serif;
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-min-height: 100vh;
-padding: 10px;
-color: #333;
-}
-
-.container {
-max-width: 500px;
-margin: 0 auto;
-background: white;
-border-radius: 12px;
-box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-overflow: hidden;
-}
-
-.header {
-background: linear-gradient(135deg, #1a73e8 0%, #1865c0 100%);
-color: white;
-padding: 20px;
-text-align: center;
-}
-
-.header h1 {
-font-size: 24px;
-margin-bottom: 5px;
-}
-
-.header p {
-font-size: 12px;
-opacity: 0.9;
-}
-
-.status-bar {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 10px 20px;
-background: #f5f5f5;
-border-bottom: 1px solid #e0e0e0;
-font-size: 12px;
-}
-
-.status-indicator {
-display: inline-flex;
-align-items: center;
-gap: 5px;
-}
-
-.status-dot {
-width: 8px;
-height: 8px;
-border-radius: 50%;
-background: #4caf50;
-animation: pulse 2s infinite;
-}
-
-.status-dot.offline {
-background: #ff9800;
-}
-
-@keyframes pulse {
-0%, 100% { opacity: 1; }
-50% { opacity: 0.5; }
-}
-
-.tabs {
-display: flex;
-border-bottom: 2px solid #e0e0e0;
-}
-
-.tab-button {
-flex: 1;
-padding: 15px;
-background: none;
-border: none;
-cursor: pointer;
-font-size: 14px;
-font-weight: 500;
-color: #999;
-border-bottom: 3px solid transparent;
-transition: all 0.3s;
-}
-
-.tab-button.active {
-color: #1a73e8;
-border-bottom-color: #1a73e8;
-}
-
-.content {
-padding: 20px;
-}
-
-.form-group {
-margin-bottom: 20px;
-}
-
-label {
-display: block;
-margin-bottom: 8px;
-font-weight: 600;
-color: #333;
-font-size: 14px;
-}
-
-input[type=“text”],
-input[type=“number”],
-select {
-width: 100%;
-padding: 12px;
-border: 1px solid #ddd;
-border-radius: 6px;
-font-size: 14px;
-font-family: inherit;
-direction: rtl;
-text-align: right;
-}
-
-input[type=“text”]:focus,
-input[type=“number”]:focus,
-select:focus {
-outline: none;
-border-color: #1a73e8;
-box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
-}
-
-input[type=“text”]:disabled,
-input[type=“number”]:disabled {
-background: #f5f5f5;
-color: #999;
-}
-
-.auto-field {
-background: #e8f0fe;
-padding: 12px;
-border-radius: 6px;
-margin-bottom: 10px;
-font-size: 14px;
-text-align: right;
-}
-
-.auto-field strong {
-color: #1a73e8;
-}
-
-.button {
-width: 100%;
-padding: 12px;
-border: none;
-border-radius: 6px;
-font-size: 14px;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.3s;
-margin-bottom: 10px;
-}
-
-.btn-primary {
-background: linear-gradient(135deg, #1a73e8 0%, #1865c0 100%);
-color: white;
-}
-
-.btn-primary:hover {
-transform: translateY(-2px);
-box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
-}
-
-.btn-primary:active {
-transform: translateY(0);
-}
-
-.btn-primary:disabled {
-opacity: 0.6;
-cursor: not-allowed;
-}
-
-.btn-secondary {
-background: #f1f3f4;
-color: #333;
-border: 1px solid #ddd;
-}
-
-.btn-secondary:hover {
-background: #e8eaed;
-}
-
-.customer-item {
-background: #f9f9f9;
-border: 1px solid #e0e0e0;
-border-radius: 8px;
-padding: 12px;
-margin-bottom: 12px;
-position: relative;
-}
-
-.customer-item h3 {
-font-size: 14px;
-margin-bottom: 8px;
-color: #1a73e8;
-}
-
-.customer-item p {
-font-size: 13px;
-margin-bottom: 5px;
-color: #666;
-}
-
-.customer-item .remove-btn {
-position: absolute;
-top: 10px;
-left: 10px;
-background: #ea4335;
-color: white;
-border: none;
-border-radius: 50%;
-width: 24px;
-height: 24px;
-cursor: pointer;
-font-size: 12px;
-display: flex;
-align-items: center;
-justify-content: center;
-}
-
-.empty-state {
-text-align: center;
-padding: 40px 20px;
-color: #999;
-}
-
-.empty-state p {
-font-size: 14px;
-}
-
-.summary {
-background: #e8f0fe;
-border-left: 4px solid #1a73e8;
-padding: 12px;
-border-radius: 6px;
-margin-bottom: 20px;
-}
-
-.summary p {
-font-size: 14px;
-margin-bottom: 5px;
-}
-
-.tab-content {
-display: none;
-}
-
-.tab-content.active {
-display: block;
-}
-
-.success-message {
-background: #c6e3b5;
-color: #2d5016;
-padding: 12px;
-border-radius: 6px;
-margin-bottom: 15px;
-font-size: 13px;
-text-align: center;
-}
-
-.error-message {
-background: #fce8e6;
-color: #a50e0e;
-padding: 12px;
-border-radius: 6px;
-margin-bottom: 15px;
-font-size: 13px;
-text-align: center;
-}
-
-.loading {
-display: inline-block;
-width: 12px;
-height: 12px;
-border: 2px solid #f3f3f3;
-border-top: 2px solid #1a73e8;
-border-radius: 50%;
-animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-0% { transform: rotate(0deg); }
-100% { transform: rotate(360deg); }
-}
-
-@media (max-width: 480px) {
-.header h1 {
-font-size: 20px;
-}
-
-.container {
-border-radius: 0;
-}
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; padding: 10px; }
+.container { max-width: 500px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); overflow: hidden; }
+.header { background: #1a73e8; color: white; padding: 20px; text-align: center; }
+.header h1 { font-size: 24px; margin-bottom: 5px; }
+.header p { font-size: 12px; opacity: 0.9; }
+.tabs { display: flex; border-bottom: 2px solid #e0e0e0; }
+.tab-button { flex: 1; padding: 15px; background: none; border: none; cursor: pointer; font-size: 14px; color: #999; border-bottom: 3px solid transparent; }
+.tab-button.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+.content { padding: 20px; }
+.form-group { margin-bottom: 20px; }
+label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; direction: rtl; text-align: right; }
+input:focus, select:focus { outline: none; border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1); }
+.auto-field { background: #e8f0fe; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 14px; text-align: right; }
+.button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 10px; transition: all 0.3s; }
+.btn-primary { background: #1a73e8; color: white; }
+.btn-primary:hover { opacity: 0.9; }
+.btn-secondary { background: #f1f3f4; color: #333; border: 1px solid #ddd; }
+.customer-item { background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+.customer-item h3 { font-size: 14px; margin-bottom: 8px; color: #1a73e8; }
+.customer-item p { font-size: 13px; margin-bottom: 5px; color: #666; }
+.empty-state { text-align: center; padding: 40px 20px; color: #999; }
+.summary { background: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px; border-radius: 6px; margin-bottom: 20px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.success-message { background: #c6e3b5; color: #2d5016; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+.error-message { background: #fce8e6; color: #a50e0e; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+.remove-btn { background: #ea4335; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; margin-left: 10px; }
 </style>
-
 </head>
 <body>
 <div class="container">
-<!-- الرأس -->
 <div class="header">
-  <h1>🎁 إدارة هدايا المبيعات</h1>
-  <p>نظام تسجيل مبيعات الهدايا للمندوبين</p>
+<h1>🎁 إدارة هدايا المبيعات</h1>
+<p>نظام تسجيل مبيعات الهدايا للمندوبين</p>
 </div>
-
-<!-- شريط الحالة -->
-
-<div class="status-bar">
-  <span class="status-indicator">
-    <span class="status-dot" id="statusDot"></span>
-    <span id="statusText">متصل</span>
-  </span>
-  <span id="syncStatus">جاهز</span>
-</div>
-
-<!-- التبويبات -->
 
 <div class="tabs">
-  <button class="tab-button active" onclick="switchTab('entry', event)">إدخال البيانات</button>
-  <button class="tab-button" onclick="switchTab('tour', event)">بيانات الجولة</button>
-  <button class="tab-button" onclick="switchTab('about', event)">معلومات</button>
+<button class="tab-button active" onclick="showTab('entry')">إدخال البيانات</button>
+<button class="tab-button" onclick="showTab('tour')">بيانات الجولة</button>
+<button class="tab-button" onclick="showTab('about')">معلومات</button>
 </div>
 
-<!-- محتوى التبويبات -->
-
 <div class="content">
-  <!-- تبويب الإدخال -->
-  <div id="entry" class="tab-content active">
-    <h2 style="margin-bottom: 20px; font-size: 18px;">تسجيل عميل جديد</h2>
-    <div id="entryMessage"></div>
+<!-- تبويب الإدخال -->
+<div id="entry" class="tab-content active">
+<h2 style="margin-bottom: 20px; font-size: 18px;">تسجيل عميل جديد</h2>
+<div id="entryMessage"></div>
 
-```
 <form id="entryForm" onsubmit="addCustomer(event)">
-  <!-- اسم المندوب -->
-  <div class="form-group">
-    <label for="salesperson">اسم المندوب *</label>
-    <select id="salesperson" required>
-      <option value="">-- اختر المندوب --</option>
-    </select>
-  </div>
+<div class="form-group">
+<label>اسم المندوب *</label>
+<select id="salesperson" required>
+<option value="">-- اختر المندوب --</option>
+</select>
+</div>
 
-  <!-- كود المحل -->
-  <div class="form-group">
-    <label for="storeCode">كود المحل (kr#####) *</label>
-    <input type="text" id="storeCode" placeholder="مثال: kr00001" required onblur="lookupStore()" oninput="lookupStore()">
-  </div>
+<div class="form-group">
+<label>كود المحل (kr#####) *</label>
+<input type="text" id="storeCode" placeholder="مثال: kr00001" required oninput="searchStore()">
+</div>
 
-  <!-- بيانات المحل (مجلوبة تلقائياً) -->
-  <div id="storeInfoContainer" style="display:none;">
-    <div class="auto-field">
-      <strong>اسم المحل:</strong> <span id="storeName"></span>
-    </div>
-    <div class="auto-field">
-      <strong>الهاتف:</strong> <span id="storePhone"></span>
-    </div>
-  </div>
+<div id="storeInfoContainer" style="display:none;">
+<div class="auto-field">
+<strong>اسم المحل:</strong> <span id="storeName"></span>
+</div>
+<div class="auto-field">
+<strong>الهاتف:</strong> <span id="storePhone"></span>
+</div>
+</div>
 
-  <!-- عدد المبيعات -->
-  <div class="form-group">
-    <label for="salesCount">عدد المبيعات *</label>
-    <input type="number" id="salesCount" min="1" required placeholder="أدخل عدد المبيعات">
-  </div>
+<div class="form-group">
+<label>عدد المبيعات *</label>
+<input type="number" id="salesCount" min="1" required placeholder="أدخل عدد المبيعات">
+</div>
 
-  <!-- نوع الهدية -->
-  <div class="form-group">
-    <label for="giftType">نوع الهدية *</label>
-    <select id="giftType" required>
-      <option value="">-- اختر الهدية --</option>
-      <option value="علب 250 مل">علب 250 مل</option>
-      <option value="زجاج 250 مل">زجاج 250 مل</option>
-      <option value="علب 150 مل">علب 150 مل</option>
-      <option value="دبات 750 مل">دبات 750 مل</option>
-      <option value="دبات 1.75 لتر">دبات 1.75 لتر</option>
-      <option value="دبات 330 مل">دبات 330 مل</option>
-    </select>
-  </div>
+<div class="form-group">
+<label>نوع الهدية *</label>
+<select id="giftType" required>
+<option value="">-- اختر الهدية --</option>
+<option value="علب 250 مل">علب 250 مل</option>
+<option value="زجاج 250 مل">زجاج 250 مل</option>
+<option value="علب 150 مل">علب 150 مل</option>
+<option value="دبات 750 مل">دبات 750 مل</option>
+<option value="دبات 1.75 لتر">دبات 1.75 لتر</option>
+<option value="دبات 330 مل">دبات 330 مل</option>
+</select>
+</div>
 
-  <!-- عدد الهدايا -->
-  <div class="form-group">
-    <label for="giftCount">عدد الهدايا *</label>
-    <input type="number" id="giftCount" min="1" required placeholder="أدخل عدد الهدايا">
-  </div>
+<div class="form-group">
+<label>عدد الهدايا *</label>
+<input type="number" id="giftCount" min="1" required placeholder="أدخل عدد الهدايا">
+</div>
 
-  <button type="submit" class="button btn-primary" id="submitBtn">➕ إضافة العميل</button>
+<button type="submit" class="button btn-primary">➕ إضافة العميل</button>
+
 </form>
-```
+</div>
 
-  </div>
+<!-- تبويب الجولة -->
 
-  <!-- تبويب بيانات الجولة -->
+<div id="tour" class="tab-content">
+<h2 style="margin-bottom: 20px; font-size: 18px;">ملخص الجولة</h2>
 
-  <div id="tour" class="tab-content">
-    <h2 style="margin-bottom: 20px; font-size: 18px;">ملخص الجولة</h2>
-
-```
 <div class="summary" id="tourSummary" style="display:none;">
-  <p>📊 <strong>عدد العملاء:</strong> <span id="customerCount">0</span></p>
-  <p>📦 <strong>إجمالي الهدايا:</strong> <span id="totalGifts">0</span></p>
+<p>📊 عدد العملاء: <strong><span id="customerCount">0</span></strong></p>
+<p>📦 إجمالي الهدايا: <strong><span id="totalGifts">0</span></strong></p>
 </div>
 
 <div id="customersList"></div>
 
 <div id="emptyTour" class="empty-state">
-  <p>📭 لم تضف أي عملاء حتى الآن</p>
-  <p style="font-size: 12px; margin-top: 10px;">انتقل لتبويب "إدخال البيانات" لإضافة عملاء</p>
+<p>📭 لم تضف أي عملاء حتى الآن</p>
+<p style="font-size: 12px; margin-top: 10px;">انتقل لتبويب "إدخال البيانات" لإضافة عملاء</p>
 </div>
 
 <div id="tourActions" style="display:none; margin-top: 20px;">
-  <button class="button btn-primary" onclick="endTour()">✅ إنهاء الجولة وطباعة الوصل</button>
-  <button class="button btn-secondary" onclick="clearTour()" style="background: #fee; color: #c33;">🗑️ مسح جميع البيانات</button>
+<button class="button btn-primary" onclick="printReceipt()">✅ طباعة الوصل</button>
+<button class="button btn-secondary" onclick="clearTour()" style="background: #fee; color: #c33;">🗑️ مسح البيانات</button>
 </div>
-```
+</div>
 
-  </div>
+<!-- تبويب المعلومات -->
 
-  <!-- تبويب المعلومات -->
-
-  <div id="about" class="tab-content">
-    <h2 style="margin-bottom: 20px; font-size: 18px;">ℹ️ معلومات التطبيق</h2>
-
-```
+<div id="about" class="tab-content">
+<h2 style="margin-bottom: 20px; font-size: 18px;">معلومات التطبيق</h2>
 <div style="font-size: 14px; line-height: 1.8; color: #666;">
-  <p><strong>الإصدار:</strong> 3.2.0 (بدون أخطاء)</p>
-  <p><strong>الوضع:</strong> <span id="appMode">متصل</span></p>
-  <p><strong>المندوبين:</strong> <span id="salespeopleCount">19</span></p>
-  <p><strong>المحلات:</strong> <span id="storesCount">20</span></p>
+<p><strong>الإصدار:</strong> 4.0.0</p>
+<p><strong>المندوبين:</strong> 19 مندوب</p>
+<p><strong>المحلات:</strong> 20 محل</p>
 
-  <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
+<hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
 
-  <p><strong>المميزات:</strong></p>
+<p><strong>المميزات:</strong></p>
+<ul style="margin-right: 20px; margin-top: 10px;">
+<li>✅ العمل بدون إنترنت</li>
+<li>✅ البحث التلقائي عن المحلات</li>
+<li>✅ طباعة الوصلات</li>
+<li>✅ تصدير البيانات</li>
+<li>✅ واجهة سهلة الاستخدام</li>
+</ul>
 
-  <ul style="margin-right: 20px; margin-top: 10px;">
-    <li>✅ العمل بدون إنترنت</li>
-    <li>✅ جلب بيانات المحل تلقائياً</li>
-    <li>✅ 19 مندوب محدث</li>
-    <li>✅ 20 محل متاح</li>
-    <li>✅ طباعة الوصلات</li>
-    <li>✅ تصدير البيانات</li>
-  </ul>
+<hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
 
-  <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
+<button class="button btn-secondary" onclick="downloadData()" style="margin-top: 20px;">📥 تحميل البيانات</button>
 
-  <button class="button btn-secondary" style="margin-top: 20px;" onclick="exportData()">📥 تصدير البيانات</button>
 </div>
-```
-
-  </div>
+</div>
 </div>
 </div>
 
 <script>
-// ============================================
-// 1. قاعدة بيانات المحلات
-// ============================================
+// ===== البيانات =====
 
-const storesDatabase = {
+var salespeople = [
+  'نوزاد فاروق',
+  'شالاو نوزاد',
+  'سيوان',
+  'شالاو شريف',
+  'مصطفى',
+  'عبد الله كيفي',
+  'هيوا',
+  'محمد غالب',
+  'ياد',
+  'ئاريان',
+  'ئالان',
+  'علي',
+  'ابراهيم',
+  'رابه ر',
+  'عبد الله عادل',
+  'اميد',
+  'محمد نوري',
+  'محمد محسن',
+  'محمود'
+];
+
+var stores = {
   'kr00001': { name: 'محل الريحان', phone: '0501234567' },
   'kr00002': { name: 'محل النوره', phone: '0502345678' },
   'kr00003': { name: 'محل الرفعة', phone: '0503456789' },
@@ -499,396 +208,213 @@ const storesDatabase = {
   'kr00020': { name: 'محل الصداقة', phone: '0501234578' }
 };
 
-// ============================================
-// 2. قائمة المندوبين
-// ============================================
+var tourData = [];
 
-const salespeople = [
-  'نوزاد فاروق',
-  'شالاو نوزاد',
-  'سيوان',
-  'شالاو شريف',
-  'مصطفى',
-  'عبد الله كيفي',
-  'هيوا',
-  'محمد غالب',
-  'ياد',
-  'ئاريان',
-  'ئالان',
-  'علي',
-  'ابراهيم',
-  'رابه ر',
-  'عبد الله عادل',
-  'اميد',
-  'محمد نوري',
-  'محمد محسن',
-  'محمود'
-];
+// ===== الوظائف الأساسية =====
 
-// ============================================
-// 3. المتغيرات
-// ============================================
-
-let isOnline = navigator.onLine;
-let currentTourId = 'TOUR-' + Date.now();
-let userId = localStorage.getItem('userId') || 'user-' + Date.now();
-let tourData = {
-  tourId: currentTourId,
-  customers: []
-};
-
-localStorage.setItem('userId', userId);
-
-// ============================================
-// 4. تحميل البيانات
-// ============================================
-
-function loadTourData() {
-  const saved = localStorage.getItem('currentTour');
-  if (saved) {
-    try {
-      tourData = JSON.parse(saved);
-      currentTourId = tourData.tourId;
-    } catch (e) {
-      console.error('خطأ في تحميل البيانات');
-    }
+function showTab(tabName) {
+  var tabs = document.getElementsByClassName('tab-content');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove('active');
   }
-}
-
-function saveTourData() {
-  localStorage.setItem('currentTour', JSON.stringify(tourData));
-}
-
-// ============================================
-// 5. حالة الاتصال
-// ============================================
-
-window.addEventListener('online', () => {
-  isOnline = true;
-  updateStatusBar();
-});
-
-window.addEventListener('offline', () => {
-  isOnline = false;
-  updateStatusBar();
-});
-
-function updateStatusBar() {
-  const dot = document.getElementById('statusDot');
-  const text = document.getElementById('statusText');
-  const mode = document.getElementById('appMode');
-
-  if (isOnline) {
-    dot.classList.remove('offline');
-    text.textContent = 'متصل';
-    mode.textContent = 'متصل';
-  } else {
-    dot.classList.add('offline');
-    text.textContent = 'بدون إنترنت';
-    mode.textContent = 'بدون إنترنت (جميع البيانات محفوظة محلياً)';
+  var buttons = document.getElementsByClassName('tab-button');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].classList.remove('active');
   }
+  document.getElementById(tabName).classList.add('active');
+  event.target.classList.add('active');
 }
-
-// ============================================
-// 6. تحميل المندوبين
-// ============================================
 
 function loadSalespeople() {
-  const select = document.getElementById('salesperson');
-  if (!select) return;
-  
-  salespeople.forEach(name => {
-    const option = document.createElement('option');
-    option.value = name;
-    option.textContent = name;
+  var select = document.getElementById('salesperson');
+  for (var i = 0; i < salespeople.length; i++) {
+    var option = document.createElement('option');
+    option.value = salespeople[i];
+    option.textContent = salespeople[i];
     select.appendChild(option);
-  });
+  }
 }
 
-// ============================================
-// 7. البحث عن المحل
-// ============================================
-
-function lookupStore() {
-  const input = document.getElementById('storeCode');
-  const storeCode = input.value.trim().toLowerCase();
-  const container = document.getElementById('storeInfoContainer');
-
-  if (storeCode.length === 0) {
+function searchStore() {
+  var code = document.getElementById('storeCode').value.toLowerCase();
+  var container = document.getElementById('storeInfoContainer');
+  
+  if (code.length < 8) {
     container.style.display = 'none';
     return;
   }
-
-  if (storeCode.length < 8) {
-    container.style.display = 'none';
-    return;
-  }
-
-  if (storesDatabase[storeCode]) {
-    const store = storesDatabase[storeCode];
-    document.getElementById('storeName').textContent = store.name;
-    document.getElementById('storePhone').textContent = store.phone;
+  
+  if (stores[code]) {
+    document.getElementById('storeName').textContent = stores[code].name;
+    document.getElementById('storePhone').textContent = stores[code].phone;
     container.style.display = 'block';
   } else {
     container.style.display = 'none';
   }
 }
 
-// ============================================
-// 8. إضافة عميل
-// ============================================
-
 function addCustomer(event) {
   event.preventDefault();
-
-  const submitBtn = document.getElementById('submitBtn');
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span class="loading"></span> جاري الإضافة...';
-
-  const salesperson = document.getElementById('salesperson').value;
-  const storeCode = document.getElementById('storeCode').value.toLowerCase();
-  const storeName = document.getElementById('storeName').textContent;
-  const phone = document.getElementById('storePhone').textContent;
-  const salesCount = document.getElementById('salesCount').value;
-  const giftType = document.getElementById('giftType').value;
-  const giftCount = document.getElementById('giftCount').value;
-
+  
+  var salesperson = document.getElementById('salesperson').value;
+  var storeCode = document.getElementById('storeCode').value.toLowerCase();
+  var storeName = document.getElementById('storeName').textContent;
+  var phone = document.getElementById('storePhone').textContent;
+  var salesCount = document.getElementById('salesCount').value;
+  var giftType = document.getElementById('giftType').value;
+  var giftCount = document.getElementById('giftCount').value;
+  
   if (!salesperson || !storeCode || !storeName || !salesCount || !giftType || !giftCount) {
-    showMessage('entryMessage', 'الرجاء ملء جميع الحقول', 'error');
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '➕ إضافة العميل';
+    document.getElementById('entryMessage').innerHTML = '<div class="error-message">الرجاء ملء جميع الحقول</div>';
     return;
   }
-
-  const customer = {
-    id: 'CUST-' + Date.now(),
-    salesperson,
-    storeCode,
-    storeName,
-    phone,
-    salesCount: parseInt(salesCount),
-    giftType,
-    giftCount: parseInt(giftCount),
-    date: new Date().toISOString(),
-    userId: userId
+  
+  var customer = {
+    id: Date.now(),
+    salesperson: salesperson,
+    storeCode: storeCode,
+    storeName: storeName,
+    phone: phone,
+    salesCount: salesCount,
+    giftType: giftType,
+    giftCount: giftCount
   };
-
-  tourData.customers.push(customer);
+  
+  tourData.push(customer);
   saveTourData();
-
-  showMessage('entryMessage', 'تم إضافة العميل بنجاح');
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = '➕ إضافة العميل';
+  
+  document.getElementById('entryMessage').innerHTML = '<div class="success-message">تم إضافة العميل بنجاح</div>';
   document.getElementById('entryForm').reset();
   document.getElementById('storeInfoContainer').style.display = 'none';
   updateTourDisplay();
-  setTimeout(() => { document.getElementById('entryMessage').innerHTML = ''; }, 2000);
+  
+  setTimeout(function() {
+    document.getElementById('entryMessage').innerHTML = '';
+  }, 2000);
 }
-
-// ============================================
-// 9. تحديث عرض الجولة
-// ============================================
 
 function updateTourDisplay() {
-  const customersList = document.getElementById('customersList');
-  const summary = document.getElementById('tourSummary');
-  const emptyState = document.getElementById('emptyTour');
-  const tourActions = document.getElementById('tourActions');
-
-  if (tourData.customers.length === 0) {
-    customersList.innerHTML = '';
+  var summary = document.getElementById('tourSummary');
+  var list = document.getElementById('customersList');
+  var empty = document.getElementById('emptyTour');
+  var actions = document.getElementById('tourActions');
+  
+  if (tourData.length === 0) {
     summary.style.display = 'none';
-    emptyState.style.display = 'block';
-    tourActions.style.display = 'none';
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    actions.style.display = 'none';
     return;
   }
-
-  const totalGifts = tourData.customers.reduce((sum, c) => sum + c.giftCount, 0);
-  document.getElementById('customerCount').textContent = tourData.customers.length;
+  
+  var totalGifts = 0;
+  for (var i = 0; i < tourData.length; i++) {
+    totalGifts += parseInt(tourData[i].giftCount);
+  }
+  
+  document.getElementById('customerCount').textContent = tourData.length;
   document.getElementById('totalGifts').textContent = totalGifts;
   summary.style.display = 'block';
-  emptyState.style.display = 'none';
-  tourActions.style.display = 'block';
-
-  customersList.innerHTML = tourData.customers.map((customer, index) => `
-    <div class="customer-item">
-      <button class="remove-btn" onclick="removeCustomer(${index})">✕</button>
-      <h3>${customer.storeName} <span style="font-size: 12px; color: #999;">(${customer.storeCode})</span></h3>
-      <p>👤 المندوب: <strong>${customer.salesperson}</strong></p>
-      <p>📱 الهاتف: <strong>${customer.phone}</strong></p>
-      <p>📊 المبيعات: <strong>${customer.salesCount}</strong></p>
-      <p>🎁 الهدية: <strong>${customer.giftType}</strong> x ${customer.giftCount}</p>
-    </div>
-  `).join('');
+  empty.style.display = 'none';
+  actions.style.display = 'block';
+  
+  var html = '';
+  for (var i = 0; i < tourData.length; i++) {
+    var c = tourData[i];
+    html += '<div class="customer-item">';
+    html += '<h3>' + c.storeName + ' <span style="font-size: 12px; color: #999;">(' + c.storeCode + ')</span></h3>';
+    html += '<p>👤 المندوب: <strong>' + c.salesperson + '</strong></p>';
+    html += '<p>📱 الهاتف: <strong>' + c.phone + '</strong></p>';
+    html += '<p>📊 المبيعات: <strong>' + c.salesCount + '</strong></p>';
+    html += '<p>🎁 الهدية: <strong>' + c.giftType + '</strong> x ' + c.giftCount + '</p>';
+    html += '<button class="remove-btn" onclick="removeCustomer(' + i + ')">حذف</button>';
+    html += '</div>';
+  }
+  list.innerHTML = html;
 }
-
-// ============================================
-// 10. حذف عميل
-// ============================================
 
 function removeCustomer(index) {
   if (confirm('هل تريد حذف هذا العميل؟')) {
-    tourData.customers.splice(index, 1);
+    tourData.splice(index, 1);
     saveTourData();
     updateTourDisplay();
   }
 }
 
-// ============================================
-// 11. إنهاء الجولة
-// ============================================
-
-function endTour() {
-  if (tourData.customers.length === 0) {
-    alert('لا توجد عملاء لإنهاء الجولة');
+function printReceipt() {
+  if (tourData.length === 0) {
+    alert('لا توجد عملاء لطباعتهم');
     return;
   }
-
-  generateReceipt();
-
-  setTimeout(() => {
-    if (confirm('هل تريد بدء جولة جديدة؟')) {
-      clearTour();
-    }
-  }, 500);
-}
-
-// ============================================
-// 12. طباعة الوصل
-// ============================================
-
-function generateReceipt() {
-  const now = new Date().toLocaleDateString('ar-SA');
-  let html = '<html dir="rtl"><head><meta charset="UTF-8"><title>وصل</title><style>';
+  
+  var now = new Date().toLocaleDateString('ar-SA');
+  var html = '<html dir="rtl"><head><meta charset="UTF-8"><title>وصل</title><style>';
   html += 'body { font-family: Arial; padding: 20px; }';
   html += 'table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }';
   html += 'th, td { border: 1px solid #333; padding: 8px; text-align: right; }';
   html += 'th { background: #f0f0f0; font-weight: bold; }';
-  html += '.header { text-align: center; margin-bottom: 20px; font-weight: bold; }';
-  html += '.signature { height: 40px; border-top: 1px solid #333; display: inline-block; width: 150px; margin: 20px 20px; }';
-  html += '.page-break { page-break-after: always; }';
   html += '</style></head><body>';
 
-for (let copies = 0; copies < 2; copies++) {
-html += ‘<div class="header"><div>وصل هدايا المبيعات</div>’;
-html += ’<div style="font-size: 12px;">التاريخ: ’ + now + ‘</div></div>’;
-html += ‘<table><thead><tr><th>كود</th><th>المندوب</th><th>المحل</th><th>الهاتف</th><th>مبيعات</th><th>هدية</th><th>عدد</th></tr></thead><tbody>’;
+html += ’<div style="text-align: center; margin-bottom: 20px;"><h2>وصل هدايا المبيعات</h2><p>التاريخ: ’ + now + ‘</p></div>’;
+html += ‘<table><tr><th>كود</th><th>المندوب</th><th>المحل</th><th>الهاتف</th><th>مبيعات</th><th>هدية</th><th>عدد</th></tr>’;
 
-```
-tourData.customers.forEach(c => {
-  html += '<tr><td>' + c.storeCode + '</td><td>' + c.salesperson + '</td><td>' + c.storeName + '</td>';
-  html += '<td>' + c.phone + '</td><td>' + c.salesCount + '</td><td>' + c.giftType + '</td><td>' + c.giftCount + '</td></tr>';
-});
-
-html += '</tbody></table><div style="text-align: right; margin-top: 30px;"><div>التوقيع: <span class="signature"></span></div></div>';
-
-if (copies === 0) {
-  html += '<div class="page-break"></div>';
-}
-```
-
+for (var i = 0; i < tourData.length; i++) {
+var c = tourData[i];
+html += ‘<tr><td>’ + c.storeCode + ‘</td><td>’ + c.salesperson + ‘</td><td>’ + c.storeName + ‘</td>’;
+html += ‘<td>’ + c.phone + ‘</td><td>’ + c.salesCount + ‘</td><td>’ + c.giftType + ‘</td><td>’ + c.giftCount + ‘</td></tr>’;
 }
 
-html += ‘</body></html>’;
+html += ‘</table></body></html>’;
 
-const printWindow = window.open(’’, ‘’, ‘height=600,width=900’);
-printWindow.document.write(html);
-printWindow.document.close();
-printWindow.print();
+var w = window.open(’’, ‘’, ‘height=600,width=900’);
+w.document.write(html);
+w.document.close();
+w.print();
 }
-
-// ============================================
-// 13. مسح الجولة
-// ============================================
 
 function clearTour() {
-if (confirm(‘هل تريد حذف جميع البيانات؟’)) {
-tourData.customers = [];
-currentTourId = ‘TOUR-’ + Date.now();
-tourData.tourId = currentTourId;
-saveTourData();
+if (confirm(‘هل تريد مسح جميع البيانات؟’)) {
+tourData = [];
+localStorage.removeItem(‘tourData’);
 updateTourDisplay();
 document.getElementById(‘entryForm’).reset();
 document.getElementById(‘storeInfoContainer’).style.display = ‘none’;
-showMessage(‘entryMessage’, ‘تم مسح جميع البيانات’);
-setTimeout(() => { document.getElementById(‘entryMessage’).innerHTML = ‘’; }, 2000);
+alert(‘تم مسح جميع البيانات’);
 }
 }
 
-// ============================================
-// 14. التبديل بين التبويبات
-// ============================================
-
-function switchTab(tabName, event) {
-if (event) {
-event.preventDefault();
+function saveTourData() {
+localStorage.setItem(‘tourData’, JSON.stringify(tourData));
 }
 
-document.querySelectorAll(’.tab-content’).forEach(tab => {
-tab.classList.remove(‘active’);
-});
-document.querySelectorAll(’.tab-button’).forEach(btn => {
-btn.classList.remove(‘active’);
-});
-
-document.getElementById(tabName).classList.add(‘active’);
-if (event && event.target) {
-event.target.classList.add(‘active’);
+function loadTourData() {
+var saved = localStorage.getItem(‘tourData’);
+if (saved) {
+try {
+tourData = JSON.parse(saved);
+} catch (e) {
+tourData = [];
 }
-
-if (tabName === ‘tour’) {
-updateTourDisplay();
 }
 }
 
-// ============================================
-// 15. رسائل
-// ============================================
-
-function showMessage(elementId, message, type) {
-const element = document.getElementById(elementId);
-if (!element) return;
-
-const className = type === ‘error’ ? ‘error-message’ : ‘success-message’;
-element.innerHTML = ‘<div class="' + className + '">’ + message + ‘</div>’;
-}
-
-// ============================================
-// 16. تصدير
-// ============================================
-
-function exportData() {
-const data = {
-tourId: tourData.tourId,
-exportDate: new Date().toISOString(),
-customers: tourData.customers
-};
-
-const json = JSON.stringify(data, null, 2);
-const blob = new Blob([json], { type: ‘application/json’ });
-const url = URL.createObjectURL(blob);
-const a = document.createElement(‘a’);
+function downloadData() {
+var data = JSON.stringify(tourData, null, 2);
+var blob = new Blob([data], { type: ‘application/json’ });
+var url = URL.createObjectURL(blob);
+var a = document.createElement(‘a’);
 a.href = url;
-a.download = ‘tour-’ + tourData.tourId + ‘.json’;
+a.download = ‘tour-data.json’;
 a.click();
-URL.revokeObjectURL(url);
 }
 
-// ============================================
-// 17. التهيئة
-// ============================================
+// ===== التهيئة =====
 
-window.addEventListener(‘DOMContentLoaded’, function() {
+window.onload = function() {
 loadTourData();
 loadSalespeople();
-updateStatusBar();
 updateTourDisplay();
-
-document.getElementById(‘salespeopleCount’).textContent = salespeople.length;
-document.getElementById(‘storesCount’).textContent = Object.keys(storesDatabase).length;
-
-console.log(‘تم تحميل التطبيق بنجاح’);
-});
+};
 </script>
 
 </body>
