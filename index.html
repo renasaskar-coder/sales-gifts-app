@@ -1,881 +1,998 @@
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1a73e8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>نظام إدارة هدايا المبيعات</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a73e8' width='192' height='192'/><text x='96' y='120' font-size='80' fill='white' text-anchor='middle' font-family='Arial'>🎁</text></svg>">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a73e8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>نظام إدارة هدايا المبيعات</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a73e8' width='192' height='192'/><text x='96' y='120' font-size='80' fill='white' text-anchor='middle' font-family='Arial'>🎁</text></svg>">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 10px;
-            color: #333;
-        }
+body {
+font-family: ‘Segoe UI’, Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+min-height: 100vh;
+padding: 10px;
+color: #333;
+}
 
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
+.container {
+max-width: 500px;
+margin: 0 auto;
+background: white;
+border-radius: 12px;
+box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+overflow: hidden;
+}
 
-        .header {
-            background: linear-gradient(135deg, #1a73e8 0%, #1865c0 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+.header {
+background: linear-gradient(135deg, #1a73e8 0%, #1865c0 100%);
+color: white;
+padding: 20px;
+text-align: center;
+}
 
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
+.header h1 {
+font-size: 24px;
+margin-bottom: 5px;
+}
 
-        .header p {
-            font-size: 12px;
-            opacity: 0.9;
-        }
+.header p {
+font-size: 12px;
+opacity: 0.9;
+}
 
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background: #f5f5f5;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 12px;
-        }
+.status-bar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 10px 20px;
+background: #f5f5f5;
+border-bottom: 1px solid #e0e0e0;
+font-size: 12px;
+}
 
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
+.status-indicator {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+}
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #4caf50;
-        }
+.status-dot {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: #4caf50;
+animation: pulse 2s infinite;
+}
 
-        .status-dot.offline {
-            background: #ff9800;
-        }
+.status-dot.offline {
+background: #ff9800;
+}
 
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid #e0e0e0;
-        }
+@keyframes pulse {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.5; }
+}
 
-        .tab-button {
-            flex: 1;
-            padding: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #999;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
+.tabs {
+display: flex;
+border-bottom: 2px solid #e0e0e0;
+}
 
-        .tab-button.active {
-            color: #1a73e8;
-            border-bottom-color: #1a73e8;
-        }
+.tab-button {
+flex: 1;
+padding: 15px;
+background: none;
+border: none;
+cursor: pointer;
+font-size: 14px;
+font-weight: 500;
+color: #999;
+border-bottom: 3px solid transparent;
+transition: all 0.3s;
+}
 
-        .content {
-            padding: 20px;
-        }
+.tab-button.active {
+color: #1a73e8;
+border-bottom-color: #1a73e8;
+}
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+.content {
+padding: 20px;
+}
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-        }
+.form-group {
+margin-bottom: 20px;
+}
 
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            direction: rtl;
-            text-align: right;
-        }
+label {
+display: block;
+margin-bottom: 8px;
+font-weight: 600;
+color: #333;
+font-size: 14px;
+}
 
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #1a73e8;
-            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
-        }
+input[type=“text”],
+input[type=“number”],
+select {
+width: 100%;
+padding: 12px;
+border: 1px solid #ddd;
+border-radius: 6px;
+font-size: 14px;
+font-family: inherit;
+direction: rtl;
+text-align: right;
+}
 
-        input[type="text"]:disabled,
-        input[type="number"]:disabled {
-            background: #f5f5f5;
-            color: #999;
-        }
+input[type=“text”]:focus,
+input[type=“number”]:focus,
+select:focus {
+outline: none;
+border-color: #1a73e8;
+box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
 
-        .auto-field {
-            background: #e8f0fe;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            text-align: right;
-        }
+input[type=“text”]:disabled,
+input[type=“number”]:disabled {
+background: #f5f5f5;
+color: #999;
+}
 
-        .auto-field strong {
-            color: #1a73e8;
-        }
+.auto-field {
+background: #e8f0fe;
+padding: 12px;
+border-radius: 6px;
+margin-bottom: 10px;
+font-size: 14px;
+text-align: right;
+}
 
-        .button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 10px;
-        }
+.auto-field strong {
+color: #1a73e8;
+}
 
-        .btn-primary {
-            background: linear-gradient(135deg, #1a73e8 0%, #1865c0 100%);
-            color: white;
-        }
+.button {
+width: 100%;
+padding: 12px;
+border: none;
+border-radius: 6px;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+margin-bottom: 10px;
+}
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
-        }
+.btn-primary {
+background: linear-gradient(135deg, #1a73e8 0%, #1865c0 100%);
+color: white;
+}
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+}
 
-        .btn-danger {
-            background: #ea4335;
-            color: white;
-        }
+.btn-primary:active {
+transform: translateY(0);
+}
 
-        .btn-danger:hover {
-            background: #d33426;
-        }
+.btn-primary:disabled {
+opacity: 0.6;
+cursor: not-allowed;
+}
 
-        .btn-secondary {
-            background: #f1f3f4;
-            color: #333;
-            border: 1px solid #ddd;
-        }
+.btn-danger {
+background: #ea4335;
+color: white;
+}
 
-        .btn-secondary:hover {
-            background: #e8eaed;
-        }
+.btn-danger:hover {
+background: #d33426;
+}
 
-        .customer-item {
-            background: #f9f9f9;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            position: relative;
-        }
+.btn-secondary {
+background: #f1f3f4;
+color: #333;
+border: 1px solid #ddd;
+}
 
-        .customer-item h3 {
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #1a73e8;
-        }
+.btn-secondary:hover {
+background: #e8eaed;
+}
 
-        .customer-item p {
-            font-size: 13px;
-            margin-bottom: 5px;
-            color: #666;
-        }
+.customer-item {
+background: #f9f9f9;
+border: 1px solid #e0e0e0;
+border-radius: 8px;
+padding: 12px;
+margin-bottom: 12px;
+position: relative;
+}
 
-        .customer-item .remove-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #ea4335;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.customer-item h3 {
+font-size: 14px;
+margin-bottom: 8px;
+color: #1a73e8;
+}
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
+.customer-item p {
+font-size: 13px;
+margin-bottom: 5px;
+color: #666;
+}
 
-        .empty-state p {
-            font-size: 14px;
-        }
+.customer-item .remove-btn {
+position: absolute;
+top: 10px;
+left: 10px;
+background: #ea4335;
+color: white;
+border: none;
+border-radius: 50%;
+width: 24px;
+height: 24px;
+cursor: pointer;
+font-size: 12px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
 
-        .summary {
-            background: #e8f0fe;
-            border-left: 4px solid #1a73e8;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
+.empty-state {
+text-align: center;
+padding: 40px 20px;
+color: #999;
+}
 
-        .summary p {
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
+.empty-state p {
+font-size: 14px;
+}
 
-        .tab-content {
-            display: none;
-        }
+.summary {
+background: #e8f0fe;
+border-left: 4px solid #1a73e8;
+padding: 12px;
+border-radius: 6px;
+margin-bottom: 20px;
+}
 
-        .tab-content.active {
-            display: block;
-        }
+.summary p {
+font-size: 14px;
+margin-bottom: 5px;
+}
 
-        .success-message {
-            background: #c6e3b5;
-            color: #2d5016;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            text-align: center;
-        }
+.tab-content {
+display: none;
+}
 
-        .error-message {
-            background: #fce8e6;
-            color: #a50e0e;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            text-align: center;
-        }
+.tab-content.active {
+display: block;
+}
 
-        .sync-status {
-            text-align: center;
-            padding: 10px;
-            font-size: 12px;
-            color: #999;
-        }
+.success-message {
+background: #c6e3b5;
+color: #2d5016;
+padding: 12px;
+border-radius: 6px;
+margin-bottom: 15px;
+font-size: 13px;
+text-align: center;
+}
 
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 20px;
-            }
+.error-message {
+background: #fce8e6;
+color: #a50e0e;
+padding: 12px;
+border-radius: 6px;
+margin-bottom: 15px;
+font-size: 13px;
+text-align: center;
+}
 
-            .container {
-                border-radius: 0;
-            }
-        }
-    </style>
+.sync-status {
+text-align: center;
+padding: 10px;
+font-size: 12px;
+color: #999;
+}
+
+.loading {
+display: inline-block;
+width: 12px;
+height: 12px;
+border: 2px solid #f3f3f3;
+border-top: 2px solid #1a73e8;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+.header h1 {
+font-size: 20px;
+}
+
+.container {
+border-radius: 0;
+}
+}
+</style>
+
 </head>
 <body>
-    <div class="container">
-        <!-- الرأس -->
-        <div class="header">
-            <h1>🎁 إدارة هدايا المبيعات</h1>
-            <p>نظام تسجيل مبيعات الهدايا للمندوبين</p>
-        </div>
+<div class="container">
+<!-- الرأس -->
+<div class="header">
+<h1>🎁 إدارة هدايا المبيعات</h1>
+<p>نظام تسجيل مبيعات الهدايا للمندوبين</p>
+</div>
 
-        <!-- شريط الحالة -->
-        <div class="status-bar">
-            <span class="status-indicator">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">متصل</span>
-            </span>
-            <span id="syncStatus">جاهز</span>
-        </div>
+<!-- شريط الحالة -->
 
-        <!-- التبويبات -->
-        <div class="tabs">
-            <button class="tab-button active" onclick="switchTab('entry')">إدخال البيانات</button>
-            <button class="tab-button" onclick="switchTab('tour')">بيانات الجولة</button>
-            <button class="tab-button" onclick="switchTab('about')">معلومات</button>
-        </div>
+<div class="status-bar">
+<span class="status-indicator">
+<span class="status-dot" id="statusDot"></span>
+<span id="statusText">متصل</span>
+</span>
+<span id="syncStatus">جاهز</span>
+</div>
 
-        <!-- محتوى التبويبات -->
-        <div class="content">
-            <!-- تبويب الإدخال -->
-            <div id="entry" class="tab-content active">
-                <h2 style="margin-bottom: 20px; font-size: 18px;">تسجيل عميل جديد</h2>
-                <div id="entryMessage"></div>
+<!-- التبويبات -->
 
-                <form id="entryForm" onsubmit="addCustomer(event)">
-                    <!-- اسم المندوب -->
-                    <div class="form-group">
-                        <label for="salesperson">اسم المندوب *</label>
-                        <select id="salesperson" required>
-                            <option value="">-- اختر المندوب --</option>
-                        </select>
-                    </div>
+<div class="tabs">
+<button class="tab-button active" onclick="switchTab('entry')">إدخال البيانات</button>
+<button class="tab-button" onclick="switchTab('tour')">بيانات الجولة</button>
+<button class="tab-button" onclick="switchTab('about')">معلومات</button>
+</div>
 
-                    <!-- كود المحل -->
-                    <div class="form-group">
-                        <label for="storeCode">كود المحل (KR#####) *</label>
-                        <input type="text" id="storeCode" placeholder="مثال: KR00001" required 
-                               onblur="lookupStore()">
-                    </div>
+<!-- محتوى التبويبات -->
 
-                    <!-- بيانات المحل (مجلوبة تلقائياً) -->
-                    <div id="storeInfoContainer" style="display:none;">
-                        <div class="auto-field">
-                            <strong>اسم المحل:</strong> <span id="storeName"></span>
-                        </div>
-                        <div class="auto-field">
-                            <strong>الهاتف:</strong> <span id="storePhone"></span>
-                        </div>
-                    </div>
+<div class="content">
+<!-- تبويب الإدخال -->
+<div id="entry" class="tab-content active">
+<h2 style="margin-bottom: 20px; font-size: 18px;">تسجيل عميل جديد</h2>
+<div id="entryMessage"></div>
 
-                    <!-- عدد المبيعات -->
-                    <div class="form-group">
-                        <label for="salesCount">عدد المبيعات *</label>
-                        <input type="number" id="salesCount" min="1" required placeholder="أدخل عدد المبيعات">
-                    </div>
+<form id="entryForm" onsubmit="addCustomer(event)">
+<!-- اسم المندوب -->
+<div class="form-group">
+<label for="salesperson">اسم المندوب *</label>
+<select id="salesperson" required>
+<option value="">-- اختر المندوب --</option>
+</select>
+</div>
 
-                    <!-- نوع الهدية -->
-                    <div class="form-group">
-                        <label for="giftType">نوع الهدية *</label>
-                        <select id="giftType" required>
-                            <option value="">-- اختر الهدية --</option>
-                            <option value="علب 250 مل">علب 250 مل</option>
-                            <option value="زجاج 250 مل">زجاج 250 مل</option>
-                            <option value="علب 150 مل">علب 150 مل</option>
-                            <option value="دبات 750 مل">دبات 750 مل</option>
-                            <option value="دبات 1.75 لتر">دبات 1.75 لتر</option>
-                            <option value="دبات 330 مل">دبات 330 مل</option>
-                        </select>
-                    </div>
+<!-- كود المحل -->
 
-                    <!-- عدد الهدايا -->
-                    <div class="form-group">
-                        <label for="giftCount">عدد الهدايا *</label>
-                        <input type="number" id="giftCount" min="1" required placeholder="أدخل عدد الهدايا">
-                    </div>
+<div class="form-group">
+<label for="storeCode">كود المحل (KR#####) *</label>
+<input type="text" id="storeCode" placeholder="مثال: KR00001" required onblur="lookupStore()">
+</div>
 
-                    <button type="submit" class="button btn-primary">➕ إضافة العميل</button>
-                </form>
-            </div>
+<!-- بيانات المحل (مجلوبة تلقائياً) -->
 
-            <!-- تبويب بيانات الجولة -->
-            <div id="tour" class="tab-content">
-                <h2 style="margin-bottom: 20px; font-size: 18px;">ملخص الجولة</h2>
-                
-                <div class="summary" id="tourSummary" style="display:none;">
-                    <p>📊 <strong>عدد العملاء:</strong> <span id="customerCount">0</span></p>
-                    <p>📦 <strong>إجمالي الهدايا:</strong> <span id="totalGifts">0</span></p>
-                </div>
+<div id="storeInfoContainer" style="display:none;">
+<div class="auto-field">
+<strong>اسم المحل:</strong> <span id="storeName"></span>
+</div>
+<div class="auto-field">
+<strong>الهاتف:</strong> <span id="storePhone"></span>
+</div>
+</div>
 
-                <div id="customersList"></div>
+<!-- عدد المبيعات -->
 
-                <div id="emptyTour" class="empty-state">
-                    <p>📭 لم تضف أي عملاء حتى الآن</p>
-                    <p style="font-size: 12px; margin-top: 10px;">انتقل لتبويب "إدخال البيانات" لإضافة عملاء</p>
-                </div>
+<div class="form-group">
+<label for="salesCount">عدد المبيعات *</label>
+<input type="number" id="salesCount" min="1" required placeholder="أدخل عدد المبيعات">
+</div>
 
-                <div id="tourActions" style="display:none; margin-top: 20px;">
-                    <button class="button btn-primary" onclick="endTour()">✅ إنهاء الجولة وطباعة الوصل</button>
-                    <button class="button btn-secondary" onclick="clearTour()" style="background: #fee; color: #c33;">🗑️ مسح جميع البيانات</button>
-                </div>
-            </div>
+<!-- نوع الهدية -->
 
-            <!-- تبويب المعلومات -->
-            <div id="about" class="tab-content">
-                <h2 style="margin-bottom: 20px; font-size: 18px;">ℹ️ معلومات التطبيق</h2>
-                
-                <div style="font-size: 14px; line-height: 1.8; color: #666;">
-                    <p><strong>الإصدار:</strong> 1.0.0</p>
-                    <p><strong>الوضع:</strong> <span id="appMode">متصل</span></p>
-                    <p><strong>السعة المتاحة:</strong> <span id="storageInfo">-</span></p>
-                    
-                    <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
-                    
-                    <p><strong>المميزات:</strong></p>
-                    <ul style="margin-right: 20px; margin-top: 10px;">
-                        <li>✅ العمل بدون إنترنت (Offline)</li>
-                        <li>✅ تزامن تلقائي عند الاتصال</li>
-                        <li>✅ طباعة الوصلات بسهولة</li>
-                        <li>✅ دعم iOS و Android</li>
-                    </ul>
-                    
-                    <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
-                    
-                    <p><strong>البيانات المحفوظة محلياً:</strong></p>
-                    <p style="margin-top: 10px; font-size: 12px;" id="localDataInfo">جاري التحميل...</p>
-                    
-                    <button class="button btn-secondary" style="margin-top: 20px;" onclick="exportData()">📥 تصدير البيانات</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="form-group">
+<label for="giftType">نوع الهدية *</label>
+<select id="giftType" required>
+<option value="">-- اختر الهدية --</option>
+<option value="علب 250 مل">علب 250 مل</option>
+<option value="زجاج 250 مل">زجاج 250 مل</option>
+<option value="علب 150 مل">علب 150 مل</option>
+<option value="دبات 750 مل">دبات 750 مل</option>
+<option value="دبات 1.75 لتر">دبات 1.75 لتر</option>
+<option value="دبات 330 مل">دبات 330 مل</option>
+</select>
+</div>
 
-    <script>
-        // ============================================
-        // 1. تهيئة التطبيق وتسجيل Service Worker
-        // ============================================
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(reg => {
-                console.log('Service Worker مسجل بنجاح');
-            }).catch(err => {
-                console.log('فشل تسجيل Service Worker:', err);
-            });
-        }
+<!-- عدد الهدايا -->
 
-        // ============================================
-        // 2. متغيرات التطبيق
-        // ============================================
-        let isOnline = navigator.onLine;
-        let currentTourId = 'TOUR-' + Date.now();
-        let tourData = {
-            tourId: currentTourId,
-            customers: []
-        };
+<div class="form-group">
+<label for="giftCount">عدد الهدايا *</label>
+<input type="number" id="giftCount" min="1" required placeholder="أدخل عدد الهدايا">
+</div>
 
-        // تحميل البيانات من localStorage
-        function loadTourData() {
-            const saved = localStorage.getItem('currentTour');
-            if (saved) {
-                tourData = JSON.parse(saved);
-                currentTourId = tourData.tourId;
-            }
-        }
+<button type="submit" class="button btn-primary" id="submitBtn">➕ إضافة العميل</button>
 
-        // حفظ البيانات في localStorage
-        function saveTourData() {
-            localStorage.setItem('currentTour', JSON.stringify(tourData));
-        }
+</form>
+</div>
 
-        // ============================================
-        // 3. تحديث حالة الاتصال
-        // ============================================
-        window.addEventListener('online', () => {
-            isOnline = true;
-            updateStatusBar();
-            syncData();
-        });
+<!-- تبويب بيانات الجولة -->
 
-        window.addEventListener('offline', () => {
-            isOnline = false;
-            updateStatusBar();
-        });
+<div id="tour" class="tab-content">
+<h2 style="margin-bottom: 20px; font-size: 18px;">ملخص الجولة</h2>
 
-        function updateStatusBar() {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            const mode = document.getElementById('appMode');
+<div class="summary" id="tourSummary" style="display:none;">
+<p>📊 <strong>عدد العملاء:</strong> <span id="customerCount">0</span></p>
+<p>📦 <strong>إجمالي الهدايا:</strong> <span id="totalGifts">0</span></p>
+</div>
 
-            if (isOnline) {
-                dot.classList.remove('offline');
-                text.textContent = 'متصل 🌐';
-                mode.textContent = 'متصل';
-            } else {
-                dot.classList.add('offline');
-                text.textContent = 'بدون إنترنت 📡';
-                mode.textContent = 'بدون إنترنت (جميع البيانات تُحفظ محلياً)';
-            }
-        }
+<div id="customersList"></div>
 
-        // ============================================
-        // 4. تحميل قائمة المندوبين
-        // ============================================
-        async function loadSalespeople() {
-            const salespeople = [
-                'أحمد محمد', 'علي حسن', 'محمود إبراهيم', 'سارة أحمد',
-                'فاطمة محمود', 'خالد علي', 'ياسمين حسن', 'عمرو إبراهيم',
-                'لينا محمد', 'طارق حسن', 'دينا علي', 'محمد سارة',
-                'نورا أحمد', 'رامي إبراهيم', 'هبة محمود', 'إبراهيم علي',
-                'مريم حسن', 'جمال محمد', 'سمر أحمد'
-            ];
+<div id="emptyTour" class="empty-state">
+<p>📭 لم تضف أي عملاء حتى الآن</p>
+<p style="font-size: 12px; margin-top: 10px;">انتقل لتبويب "إدخال البيانات" لإضافة عملاء</p>
+</div>
 
-            const select = document.getElementById('salesperson');
-            salespeople.forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                select.appendChild(option);
-            });
-        }
+<div id="tourActions" style="display:none; margin-top: 20px;">
+<button class="button btn-primary" onclick="endTour()">✅ إنهاء الجولة وطباعة الوصل</button>
+<button class="button btn-secondary" onclick="clearTour()" style="background: #fee; color: #c33;">🗑️ مسح جميع البيانات</button>
+</div>
+</div>
 
-        // ============================================
-        // 5. البحث عن بيانات المحل
-        // ============================================
-        async function lookupStore() {
-            const storeCode = document.getElementById('storeCode').value.trim().toUpperCase();
-            
-            // التحقق من صيغة الكود
-            if (!/^KR\d{5}$/.test(storeCode)) {
-                document.getElementById('storeInfoContainer').style.display = 'none';
-                return;
-            }
+<!-- تبويب المعلومات -->
 
-            // بيانات عينة (في التطبيق الفعلي، ستأتي من Google Sheets)
-            const stores = {
-                'KR00001': { name: 'محل الريحان', phone: '0501234567' },
-                'KR00002': { name: 'محل النوره', phone: '0502345678' },
-                'KR00003': { name: 'محل الرفعة', phone: '0503456789' },
-                'KR00004': { name: 'محل الجود', phone: '0504567890' },
-                'KR00005': { name: 'محل النقاء', phone: '0505678901' },
-                'KR00006': { name: 'محل الفرح', phone: '0506789012' },
-                'KR00007': { name: 'محل البركة', phone: '0507890123' },
-                'KR00008': { name: 'محل الأمل', phone: '0508901234' },
-                'KR00009': { name: 'محل النور', phone: '0509012345' },
-                'KR00010': { name: 'محل القمة', phone: '0501234568' },
-            };
+<div id="about" class="tab-content">
+<h2 style="margin-bottom: 20px; font-size: 18px;">ℹ️ معلومات التطبيق</h2>
 
-            if (stores[storeCode]) {
-                const store = stores[storeCode];
-                document.getElementById('storeName').textContent = store.name;
-                document.getElementById('storePhone').textContent = store.phone;
-                document.getElementById('storeInfoContainer').style.display = 'block';
-            } else {
-                document.getElementById('storeInfoContainer').style.display = 'none';
-                showMessage('entryMessage', 'تحذير: كود المحل غير موجود في القاعدة', 'error');
-            }
-        }
+<div style="font-size: 14px; line-height: 1.8; color: #666;">
+<p><strong>الإصدار:</strong> 2.0.0 (مع Firebase)</p>
+<p><strong>الوضع:</strong> <span id="appMode">متصل</span></p>
+<p><strong>حالة Firebase:</strong> <span id="firebaseStatus">جاري الاتصال...</span></p>
 
-        // ============================================
-        // 6. إضافة عميل
-        // ============================================
-        function addCustomer(event) {
-            event.preventDefault();
+<hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
 
-            const salesperson = document.getElementById('salesperson').value;
-            const storeCode = document.getElementById('storeCode').value.toUpperCase();
-            const storeName = document.getElementById('storeName').textContent;
-            const phone = document.getElementById('storePhone').textContent;
-            const salesCount = document.getElementById('salesCount').value;
-            const giftType = document.getElementById('giftType').value;
-            const giftCount = document.getElementById('giftCount').value;
+<p><strong>المميزات:</strong></p>
 
-            // التحقق من البيانات
-            if (!salesperson || !storeCode || !storeName || !salesCount || !giftType || !giftCount) {
-                showMessage('entryMessage', '❌ الرجاء ملء جميع الحقول', 'error');
-                return;
-            }
+<ul style="margin-right: 20px; margin-top: 10px;">
+<li>✅ العمل بدون إنترنت (Offline)</li>
+<li>✅ تزامن تلقائي مع Firebase</li>
+<li>✅ عرض البيانات في لوحة المدير</li>
+<li>✅ طباعة الوصلات بسهولة</li>
+<li>✅ دعم iOS و Android</li>
+</ul>
 
-            // إضافة العميل
-            const customer = {
-                id: 'CUST-' + Date.now(),
-                salesperson,
-                storeCode,
-                storeName,
-                phone,
-                salesCount: parseInt(salesCount),
-                giftType,
-                giftCount: parseInt(giftCount),
-                date: new Date().toISOString(),
-            };
+<hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
 
-            tourData.customers.push(customer);
-            saveTourData();
+<button class="button btn-secondary" style="margin-top: 20px;" onclick="exportData()">📥 تصدير البيانات</button>
 
-            showMessage('entryMessage', '✅ تم إضافة العميل بنجاح', 'success');
-            document.getElementById('entryForm').reset();
-            document.getElementById('storeInfoContainer').style.display = 'none';
+</div>
+</div>
+</div>
+</div>
 
-            // تحديث عرض الجولة
-            updateTourDisplay();
+<!-- Firebase Scripts -->
 
-            // مسح الرسالة بعد 2 ثانية
-            setTimeout(() => {
-                document.getElementById('entryMessage').innerHTML = '';
-            }, 2000);
-        }
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
 
-        // ============================================
-        // 7. تحديث عرض بيانات الجولة
-        // ============================================
-        function updateTourDisplay() {
-            const customersList = document.getElementById('customersList');
-            const summary = document.getElementById('tourSummary');
-            const emptyState = document.getElementById('emptyTour');
-            const tourActions = document.getElementById('tourActions');
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
 
-            if (tourData.customers.length === 0) {
-                customersList.innerHTML = '';
-                summary.style.display = 'none';
-                emptyState.style.display = 'block';
-                tourActions.style.display = 'none';
-                return;
-            }
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
 
-            // عرض الملخص
-            const totalGifts = tourData.customers.reduce((sum, c) => sum + c.giftCount, 0);
-            document.getElementById('customerCount').textContent = tourData.customers.length;
-            document.getElementById('totalGifts').textContent = totalGifts;
-            summary.style.display = 'block';
-            emptyState.style.display = 'none';
-            tourActions.style.display = 'block';
+<script>
+// ============================================
+// 1. تهيئة Firebase
+// ============================================
 
-            // عرض العملاء
-            customersList.innerHTML = tourData.customers.map((customer, index) => `
-                <div class="customer-item">
-                    <button class="remove-btn" onclick="removeCustomer(${index})">✕</button>
-                    <h3>${customer.storeName} <span style="font-size: 12px; color: #999;">(${customer.storeCode})</span></h3>
-                    <p>👤 المندوب: <strong>${customer.salesperson}</strong></p>
-                    <p>📱 الهاتف: <strong>${customer.phone}</strong></p>
-                    <p>📊 المبيعات: <strong>${customer.salesCount}</strong></p>
-                    <p>🎁 الهدية: <strong>${customer.giftType}</strong> × ${customer.giftCount}</p>
-                </div>
-            `).join('');
-        }
+const firebaseConfig = {
+  apiKey: "AIzaSyB401UuTPDdPDPsSWzyJyOdp8R9g4n2oEI",
+  authDomain: "sales-gifts-app.firebaseapp.com",
+  databaseURL: "https://sales-gifts-app-default-rtdb.firebaseio.com",
+  projectId: "sales-gifts-app",
+  storageBucket: "sales-gifts-app.firebasestorage.app",
+  messagingSenderId: "16013682466",
+  appId: "1:16013682466:web:dca854eba27943c45c677b",
+  measurementId: "G-VZCM464832"
+};
 
-        // ============================================
-        // 8. حذف عميل
-        // ============================================
-        function removeCustomer(index) {
-            if (confirm('هل تريد حذف هذا العميل؟')) {
-                tourData.customers.splice(index, 1);
-                saveTourData();
-                updateTourDisplay();
-            }
-        }
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-        // ============================================
-        // 9. إنهاء الجولة وطباعة الوصل
-        // ============================================
-        function endTour() {
-            if (tourData.customers.length === 0) {
-                alert('❌ لا توجد عملاء لإنهاء الجولة');
-                return;
-            }
+// ============================================
+// 2. المتغيرات الأساسية
+// ============================================
 
-            // إنشاء الوصل وطباعته
-            generateReceipt();
+let isOnline = navigator.onLine;
+let currentTourId = 'TOUR-' + Date.now();
+let userId = localStorage.getItem('userId') || 'user-' + Date.now();
+let tourData = {
+tourId: currentTourId,
+customers: []
+};
 
-            // تنظيف البيانات بعد الطباعة
-            setTimeout(() => {
-                if (confirm('هل تريد بدء جولة جديدة؟')) {
-                    clearTour();
-                }
-            }, 500);
-        }
+// حفظ معرف المستخدم
+localStorage.setItem('userId', userId);
 
-        // ============================================
-        // 10. إنشاء الوصل وطباعته
-        // ============================================
-        function generateReceipt() {
-            const now = new Date().toLocaleDateString('ar-SA');
-            
-            let html = `
-                <html dir="rtl">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>وصل الهدايا</title>
-                    <style>
-                        body { font-family: Arial; padding: 20px; }
-                        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                        th, td { border: 1px solid #333; padding: 8px; text-align: right; }
-                        th { background: #f0f0f0; font-weight: bold; }
-                        .header { text-align: center; margin-bottom: 20px; font-weight: bold; }
-                        .signature { height: 40px; border-top: 1px solid #333; display: inline-block; width: 150px; margin: 20px 20px; }
-                        .page-break { page-break-after: always; }
-                    </style>
-                </head>
-                <body>
-            `;
+// تحميل البيانات من localStorage
+function loadTourData() {
+const saved = localStorage.getItem('currentTour');
+if (saved) {
+tourData = JSON.parse(saved);
+currentTourId = tourData.tourId;
+}
+}
 
-            // طباعة كل وصل مرتين
-            for (let copies = 0; copies < 2; copies++) {
-                html += `
-                    <div class="header">
-                        <div style="margin-bottom: 10px;">📋 وصل هدايا المبيعات</div>
-                        <div style="font-size: 12px;">التاريخ: ${now}</div>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>كود المحل</th>
-                                <th>اسم المندوب</th>
-                                <th>اسم المحل</th>
-                                <th>الهاتف</th>
-                                <th>المبيعات</th>
-                                <th>نوع الهدية</th>
-                                <th>العدد</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tourData.customers.map(c => `
-                                <tr>
-                                    <td>${c.storeCode}</td>
-                                    <td>${c.salesperson}</td>
-                                    <td>${c.storeName}</td>
-                                    <td>${c.phone}</td>
-                                    <td>${c.salesCount}</td>
-                                    <td>${c.giftType}</td>
-                                    <td>${c.giftCount}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    
-                    <div style="text-align: right; margin-top: 30px;">
-                        <div>التوقيع: <span class="signature"></span></div>
-                    </div>
-                `;
+// حفظ البيانات في localStorage
+function saveTourData() {
+localStorage.setItem('currentTour', JSON.stringify(tourData));
+}
 
-                if (copies === 0) {
-                    html += '<div class="page-break"></div>';
-                }
-            }
+// ============================================
+// 3. تحديث حالة الاتصال
+// ============================================
 
-            html += '</body></html>';
+window.addEventListener('online', () => {
+isOnline = true;
+updateStatusBar();
+syncDataToFirebase();
+});
 
-            // فتح النافذة وطباعتها
-            const printWindow = window.open('', '', 'height=600,width=900');
-            printWindow.document.write(html);
-            printWindow.document.close();
-            printWindow.print();
-        }
+window.addEventListener('offline', () => {
+isOnline = false;
+updateStatusBar();
+});
 
-        // ============================================
-        // 11. مسح الجولة
-        // ============================================
-        function clearTour() {
-            if (confirm('هل تريد حذف جميع بيانات الجولة؟')) {
-                tourData.customers = [];
-                currentTourId = 'TOUR-' + Date.now();
-                tourData.tourId = currentTourId;
-                saveTourData();
-                updateTourDisplay();
-                document.getElementById('entryForm').reset();
-                document.getElementById('storeInfoContainer').style.display = 'none';
-                showMessage('entryMessage', '✅ تم مسح جميع البيانات', 'success');
-                setTimeout(() => { document.getElementById('entryMessage').innerHTML = ''; }, 2000);
-            }
-        }
+function updateStatusBar() {
+const dot = document.getElementById('statusDot');
+const text = document.getElementById('statusText');
+const mode = document.getElementById('appMode');
 
-        // ============================================
-        // 12. التبديل بين التبويبات
-        // ============================================
-        function switchTab(tabName) {
-            // إخفاء جميع التبويبات
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
+if (isOnline) {
+dot.classList.remove('offline');
+text.textContent = 'متصل 🌐';
+mode.textContent = 'متصل';
+} else {
+dot.classList.add('offline');
+text.textContent = 'بدون إنترنت 📡';
+mode.textContent = 'بدون إنترنت (جميع البيانات تُحفظ محلياً)';
+}
+}
 
-            // إظهار التبويب المختار
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+// ============================================
+// 4. تحميل قائمة المندوبين
+// ============================================
 
-            // تحديث عرض الجولة عند الانتقال للتبويب
-            if (tabName === 'tour') {
-                updateTourDisplay();
-            }
-        }
+async function loadSalespeople() {
+const salespeople = [
+'أحمد محمد', 'علي حسن', 'محمود إبراهيم', 'سارة أحمد',
+'فاطمة محمود', 'خالد علي', 'ياسمين حسن', 'عمرو إبراهيم',
+'لينا محمد', 'طارق حسن', 'دينا علي', 'محمد سارة',
+'نورا أحمد', 'رامي إبراهيم', 'هبة محمود', 'إبراهيم علي',
+'مريم حسن', 'جمال محمد', 'سمر أحمد'
+];
 
-        // ============================================
-        // 13. رسائل التنبيهات
-        // ============================================
-        function showMessage(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            const className = type === 'error' ? 'error-message' : 'success-message';
-            element.innerHTML = `<div class="${className}">${message}</div>`;
-        }
+const select = document.getElementById('salesperson');
+salespeople.forEach(name => {
+const option = document.createElement('option');
+option.value = name;
+option.textContent = name;
+select.appendChild(option);
+});
+}
 
-        // ============================================
-        // 14. تصدير البيانات
-        // ============================================
-        function exportData() {
-            const data = {
-                tourId: tourData.tourId,
-                exportDate: new Date().toISOString(),
-                customers: tourData.customers
-            };
+// ============================================
+// 5. البحث عن بيانات المحل
+// ============================================
 
-            const json = JSON.stringify(data, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `tour-${tourData.tourId}-${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+async function lookupStore() {
+const storeCode = document.getElementById('storeCode').value.trim().toUpperCase();
 
-        // ============================================
-        // 15. مزامنة البيانات
-        // ============================================
-        async function syncData() {
-            if (!isOnline || tourData.customers.length === 0) return;
+if (!/^KR\d{5}$/.test(storeCode)) {
+document.getElementById('storeInfoContainer').style.display = 'none';
+return;
+}
 
-            try {
-                // في التطبيق الفعلي، هنا نرسل البيانات إلى Google Apps Script
-                console.log('جاري مزامنة البيانات...', tourData);
-                showMessage('syncStatus', '✅ تم المزامنة');
-                setTimeout(() => { document.getElementById('syncStatus').textContent = 'جاهز'; }, 3000);
-            } catch (err) {
-                console.error('خطأ في المزامنة:', err);
-            }
-        }
+// بيانات عينة (يمكن ربطها بـ Google Sheets أو Firebase)
+const stores = {
+'KR00001': { name: 'محل الريحان', phone: '0501234567' },
+'KR00002': { name: 'محل النوره', phone: '0502345678' },
+'KR00003': { name: 'محل الرفعة', phone: '0503456789' },
+'KR00004': { name: 'محل الجود', phone: '0504567890' },
+'KR00005': { name: 'محل النقاء', phone: '0505678901' },
+'KR00006': { name: 'محل الفرح', phone: '0506789012' },
+'KR00007': { name: 'محل البركة', phone: '0507890123' },
+'KR00008': { name: 'محل الأمل', phone: '0508901234' },
+'KR00009': { name: 'محل النور', phone: '0509012345' },
+'KR00010': { name: 'محل القمة', phone: '0501234568' },
+};
 
-        // ============================================
-        // 16. تهيئة التطبيق
-        // ============================================
-        window.addEventListener('DOMContentLoaded', () => {
-            loadTourData();
-            loadSalespeople();
-            updateStatusBar();
-            updateTourDisplay();
+if (stores[storeCode]) {
+const store = stores[storeCode];
+document.getElementById('storeName').textContent = store.name;
+document.getElementById('storePhone').textContent = store.phone;
+document.getElementById('storeInfoContainer').style.display = 'block';
+} else {
+document.getElementById('storeInfoContainer').style.display = 'none';
+showMessage('entryMessage', 'تحذير: كود المحل غير موجود في القاعدة', 'error');
+}
+}
 
-            // حساب السعة المتاحة
-            if (navigator.storage && navigator.storage.estimate) {
-                navigator.storage.estimate().then(estimate => {
-                    const used = (estimate.usage / 1024 / 1024).toFixed(2);
-                    const quota = (estimate.quota / 1024 / 1024).toFixed(2);
-                    document.getElementById('storageInfo').textContent = `${used} MB من ${quota} MB`;
-                });
-            }
+// ============================================
+// 6. إضافة عميل وإرسال البيانات إلى Firebase
+// ============================================
 
-            // معلومات البيانات المحفوظة
-            const tourCount = tourData.customers.length;
-            document.getElementById('localDataInfo').textContent = 
-                tourCount > 0 
-                    ? `📦 ${tourCount} عميل في الجولة الحالية` 
-                    : '✅ لا توجد بيانات محفوظة حالياً';
-        });
-    </script>
+function addCustomer(event) {
+event.preventDefault();
+
+const submitBtn = document.getElementById('submitBtn');
+submitBtn.disabled = true;
+submitBtn.innerHTML = '<span class="loading"></span> جاري الإضافة...';
+
+const salesperson = document.getElementById('salesperson').value;
+const storeCode = document.getElementById('storeCode').value.toUpperCase();
+const storeName = document.getElementById('storeName').textContent;
+const phone = document.getElementById('storePhone').textContent;
+const salesCount = document.getElementById('salesCount').value;
+const giftType = document.getElementById('giftType').value;
+const giftCount = document.getElementById('giftCount').value;
+
+// التحقق من البيانات
+if (!salesperson || !storeCode || !storeName || !salesCount || !giftType || !giftCount) {
+showMessage('entryMessage', '❌ الرجاء ملء جميع الحقول', 'error');
+submitBtn.disabled = false;
+submitBtn.innerHTML = '➕ إضافة العميل';
+return;
+}
+
+// إنشاء كائن العميل
+const customer = {
+id: 'CUST-' + Date.now(),
+salesperson,
+storeCode,
+storeName,
+phone,
+salesCount: parseInt(salesCount),
+giftType,
+giftCount: parseInt(giftCount),
+date: new Date().toISOString(),
+userId: userId
+};
+
+// إضافة العميل محلياً
+tourData.customers.push(customer);
+saveTourData();
+
+// إرسال البيانات إلى Firebase
+if (isOnline) {
+sendToFirebase(customer);
+} else {
+showMessage('entryMessage', '✅ تم إضافة العميل (سيتم المزامنة عند الاتصال)', 'success');
+submitBtn.disabled = false;
+submitBtn.innerHTML = '➕ إضافة العميل';
+document.getElementById('entryForm').reset();
+document.getElementById('storeInfoContainer').style.display = 'none';
+updateTourDisplay();
+setTimeout(() => { document.getElementById('entryMessage').innerHTML = ''; }, 2000);
+}
+}
+
+// إرسال البيانات إلى Firebase
+function sendToFirebase(customer) {
+const customerRef = db.ref('tours/' + currentTourId + '/customers/' + customer.id);
+
+customerRef.set(customer, function(error) {
+const submitBtn = document.getElementById('submitBtn');
+submitBtn.disabled = false;
+submitBtn.innerHTML = '➕ إضافة العميل';
+
+if (error) {
+showMessage('entryMessage', '❌ حدث خطأ في الإرسال: ' + error.message, 'error');
+console.error('Firebase Error:', error);
+} else {
+showMessage('entryMessage', '✅ تم إضافة العميل وإرساله بنجاح', 'success');
+document.getElementById('entryForm').reset();
+document.getElementById('storeInfoContainer').style.display = 'none';
+updateTourDisplay();
+setTimeout(() => { document.getElementById('entryMessage').innerHTML = ''; }, 2000);
+}
+});
+}
+
+// ============================================
+// 7. مزامنة البيانات إلى Firebase
+// ============================================
+
+function syncDataToFirebase() {
+if (!isOnline || tourData.customers.length === 0) return;
+
+const unsentCustomers = tourData.customers.filter(c => !c.synced);
+
+unsentCustomers.forEach(customer => {
+sendToFirebase(customer);
+customer.synced = true;
+});
+
+saveTourData();
+}
+
+// ============================================
+// 8. تحديث عرض بيانات الجولة
+// ============================================
+
+function updateTourDisplay() {
+const customersList = document.getElementById('customersList');
+const summary = document.getElementById('tourSummary');
+const emptyState = document.getElementById('emptyTour');
+const tourActions = document.getElementById('tourActions');
+
+if (tourData.customers.length === 0) {
+customersList.innerHTML = '';
+summary.style.display = 'none';
+emptyState.style.display = 'block';
+tourActions.style.display = 'none';
+return;
+}
+
+// عرض الملخص
+const totalGifts = tourData.customers.reduce((sum, c) => sum + c.giftCount, 0);
+document.getElementById('customerCount').textContent = tourData.customers.length;
+document.getElementById('totalGifts').textContent = totalGifts;
+summary.style.display = 'block';
+emptyState.style.display = 'none';
+tourActions.style.display = 'block';
+
+// عرض العملاء
+customersList.innerHTML = tourData.customers.map((customer, index) => `
+<div class="customer-item">
+<button class="remove-btn" onclick="removeCustomer(${index})">✕</button>
+<h3>${customer.storeName} <span style="font-size: 12px; color: #999;">(${customer.storeCode})</span></h3>
+<p>👤 المندوب: <strong>${customer.salesperson}</strong></p>
+<p>📱 الهاتف: <strong>${customer.phone}</strong></p>
+<p>📊 المبيعات: <strong>${customer.salesCount}</strong></p>
+<p>🎁 الهدية: <strong>${customer.giftType}</strong> × ${customer.giftCount}</p>
+<p style="font-size: 11px; color: #ccc; margin-top: 5px;">${customer.synced ? '✓ مرسل' : '⏳ في الانتظار'}</p>
+</div>
+`).join('');
+}
+
+// ============================================
+// 9. حذف عميل
+// ============================================
+
+function removeCustomer(index) {
+if (confirm('هل تريد حذف هذا العميل؟')) {
+const customer = tourData.customers[index];
+tourData.customers.splice(index, 1);
+saveTourData();
+
+// حذف من Firebase إذا كان مرسلاً
+if (customer.synced && isOnline) {
+db.ref('tours/' + currentTourId + '/customers/' + customer.id).remove();
+}
+
+updateTourDisplay();
+}
+}
+
+// ============================================
+// 10. إنهاء الجولة وطباعة الوصل
+// ============================================
+
+function endTour() {
+if (tourData.customers.length === 0) {
+alert('❌ لا توجد عملاء لإنهاء الجولة');
+return;
+}
+
+// إنشاء الوصل وطباعته
+generateReceipt();
+
+// تنظيف البيانات بعد الطباعة
+setTimeout(() => {
+if (confirm('هل تريد بدء جولة جديدة؟')) {
+clearTour();
+}
+}, 500);
+}
+
+// ============================================
+// 11. إنشاء الوصل وطباعته
+// ============================================
+
+function generateReceipt() {
+const now = new Date().toLocaleDateString('ar-SA');
+let html = `
+<html dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>وصل الهدايا</title>
+<style>
+body { font-family: Arial; padding: 20px; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+th, td { border: 1px solid #333; padding: 8px; text-align: right; }
+th { background: #f0f0f0; font-weight: bold; }
+.header { text-align: center; margin-bottom: 20px; font-weight: bold; }
+.signature { height: 40px; border-top: 1px solid #333; display: inline-block; width: 150px; margin: 20px 20px; }
+.page-break { page-break-after: always; }
+</style>
+
+</head>
+<body>
+`;
+
+// طباعة كل وصل مرتين
+for (let copies = 0; copies < 2; copies++) {
+html += `
+
+<div class="header">
+<div style="margin-bottom: 10px;">📋 وصل هدايا المبيعات</div>
+<div style="font-size: 12px;">التاريخ: ${now}</div>
+</div>
+<table>
+<thead>
+<tr>
+<th>كود المحل</th>
+<th>اسم المندوب</th>
+<th>اسم المحل</th>
+<th>الهاتف</th>
+<th>المبيعات</th>
+<th>نوع الهدية</th>
+<th>العدد</th>
+</tr>
+</thead>
+<tbody>
+${tourData.customers.map(c => `
+<tr>
+<td>${c.storeCode}</td>
+<td>${c.salesperson}</td>
+<td>${c.storeName}</td>
+<td>${c.phone}</td>
+<td>${c.salesCount}</td>
+<td>${c.giftType}</td>
+<td>${c.giftCount}</td>
+</tr>
+`).join('')}
+</tbody>
+</table>
+<div style="text-align: right; margin-top: 30px;">
+<div>التوقيع: <span class="signature"></span></div>
+</div>
+`;
+
+if (copies === 0) {
+html += ‘<div class="page-break"></div>’;
+}
+}
+
+html += ‘</body></html>’;
+
+// فتح النافذة وطباعتها
+const printWindow = window.open(’’, ‘’, ‘height=600,width=900’);
+printWindow.document.write(html);
+printWindow.document.close();
+printWindow.print();
+}
+
+// ============================================
+// 12. مسح الجولة
+// ============================================
+
+function clearTour() {
+if (confirm(‘هل تريد حذف جميع بيانات الجولة؟’)) {
+// حذف من Firebase
+if (isOnline) {
+db.ref(‘tours/’ + currentTourId).remove();
+}
+
+tourData.customers = [];
+currentTourId = ‘TOUR-’ + Date.now();
+tourData.tourId = currentTourId;
+saveTourData();
+updateTourDisplay();
+document.getElementById(‘entryForm’).reset();
+document.getElementById(‘storeInfoContainer’).style.display = ‘none’;
+showMessage(‘entryMessage’, ‘✅ تم مسح جميع البيانات’, ‘success’);
+setTimeout(() => { document.getElementById(‘entryMessage’).innerHTML = ‘’; }, 2000);
+}
+}
+
+// ============================================
+// 13. التبديل بين التبويبات
+// ============================================
+
+function switchTab(tabName) {
+document.querySelectorAll(’.tab-content’).forEach(tab => {
+tab.classList.remove(‘active’);
+});
+document.querySelectorAll(’.tab-button’).forEach(btn => {
+btn.classList.remove(‘active’);
+});
+
+document.getElementById(tabName).classList.add(‘active’);
+event.target.classList.add(‘active’);
+
+if (tabName === ‘tour’) {
+updateTourDisplay();
+}
+}
+
+// ============================================
+// 14. رسائل التنبيهات
+// ============================================
+
+function showMessage(elementId, message, type) {
+const element = document.getElementById(elementId);
+const className = type === ‘error’ ? ‘error-message’ : ‘success-message’;
+element.innerHTML = `<div class="${className}">${message}</div>`;
+}
+
+// ============================================
+// 15. تصدير البيانات
+// ============================================
+
+function exportData() {
+const data = {
+tourId: tourData.tourId,
+exportDate: new Date().toISOString(),
+customers: tourData.customers
+};
+
+const json = JSON.stringify(data, null, 2);
+const blob = new Blob([json], { type: ‘application/json’ });
+const url = URL.createObjectURL(blob);
+const a = document.createElement(‘a’);
+a.href = url;
+a.download = `tour-${tourData.tourId}-${Date.now()}.json`;
+a.click();
+URL.revokeObjectURL(url);
+}
+
+// ============================================
+// 16. تهيئة Firebase
+// ============================================
+
+firebase.auth().signInAnonymously().then(() => {
+console.log(‘✅ تم الاتصال بـ Firebase’);
+document.getElementById(‘firebaseStatus’).textContent = ‘✅ متصل’;
+syncDataToFirebase();
+}).catch((error) => {
+console.error(‘❌ خطأ في الاتصال بـ Firebase:’, error);
+document.getElementById(‘firebaseStatus’).textContent = ‘❌ خطأ في الاتصال’;
+});
+
+// ============================================
+// 17. تهيئة التطبيق
+// ============================================
+
+window.addEventListener(‘DOMContentLoaded’, () => {
+loadTourData();
+loadSalespeople();
+updateStatusBar();
+updateTourDisplay();
+});
+
+// تسجيل Service Worker
+if (‘serviceWorker’ in navigator) {
+navigator.serviceWorker.register(‘sw.js’).catch(err => {
+console.log(‘Service Worker غير متاح’);
+});
+}
+</script>
+
 </body>
 </html>
