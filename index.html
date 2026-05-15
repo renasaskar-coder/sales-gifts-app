@@ -8,8 +8,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>نظام إدارة هدايا المبيعات</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a73e8' width='192' height='192'/><text x='96' y='120' font-size='80' fill='white' text-anchor='middle' font-family='Arial'>🎁</text></svg>">
 <style>
 * {
 margin: 0;
@@ -194,15 +192,6 @@ opacity: 0.6;
 cursor: not-allowed;
 }
 
-.btn-danger {
-background: #ea4335;
-color: white;
-}
-
-.btn-danger:hover {
-background: #d33426;
-}
-
 .btn-secondary {
 background: #f1f3f4;
 color: #333;
@@ -302,13 +291,6 @@ font-size: 13px;
 text-align: center;
 }
 
-.sync-status {
-text-align: center;
-padding: 10px;
-font-size: 12px;
-color: #999;
-}
-
 .loading {
 display: inline-block;
 width: 12px;
@@ -357,9 +339,9 @@ border-radius: 0;
 <!-- التبويبات -->
 
 <div class="tabs">
-<button class="tab-button active" onclick="switchTab('entry')">إدخال البيانات</button>
-<button class="tab-button" onclick="switchTab('tour')">بيانات الجولة</button>
-<button class="tab-button" onclick="switchTab('about')">معلومات</button>
+<button class="tab-button active" onclick="switchTab('entry', event)">إدخال البيانات</button>
+<button class="tab-button" onclick="switchTab('tour', event)">بيانات الجولة</button>
+<button class="tab-button" onclick="switchTab('about', event)">معلومات</button>
 </div>
 
 <!-- محتوى التبويبات -->
@@ -460,8 +442,10 @@ border-radius: 0;
 <h2 style="margin-bottom: 20px; font-size: 18px;">ℹ️ معلومات التطبيق</h2>
 
 <div style="font-size: 14px; line-height: 1.8; color: #666;">
-<p><strong>الإصدار:</strong> 3.0.0 (مع قاعدة بيانات المحلات)</p>
+<p><strong>الإصدار:</strong> 3.1.0 (محدث)</p>
 <p><strong>الوضع:</strong> <span id="appMode">متصل</span></p>
+<p><strong>المندوبين:</strong> <span id="salespeopleCount">19</span></p>
+<p><strong>المحلات:</strong> <span id="storesCount">20</span></p>
 
 <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
 
@@ -487,31 +471,35 @@ border-radius: 0;
 
 <script>
 // ============================================
-// 1. قاعدة بيانات المحلات والمندوبين
+// 1. قاعدة بيانات المحلات
 // ============================================
 
 const storesDatabase = {
-  'kr00001': { name: 'محل الريحان', phone: '0501234567', salesperson: '' },
-  'kr00002': { name: 'محل النوره', phone: '0502345678', salesperson: '' },
-  'kr00003': { name: 'محل الرفعة', phone: '0503456789', salesperson: '' },
-  'kr00004': { name: 'محل الجود', phone: '0504567890', salesperson: '' },
-  'kr00005': { name: 'محل النقاء', phone: '0505678901', salesperson: '' },
-  'kr00006': { name: 'محل الفرح', phone: '0506789012', salesperson: '' },
-  'kr00007': { name: 'محل البركة', phone: '0507890123', salesperson: '' },
-  'kr00008': { name: 'محل الأمل', phone: '0508901234', salesperson: '' },
-  'kr00009': { name: 'محل النور', phone: '0509012345', salesperson: '' },
-  'kr00010': { name: 'محل القمة', phone: '0501234568', salesperson: '' },
-  'kr00011': { name: 'محل النجم', phone: '0501234569', salesperson: '' },
-  'kr00012': { name: 'محل الزهرة', phone: '0501234570', salesperson: '' },
-  'kr00013': { name: 'محل الشرق', phone: '0501234571', salesperson: '' },
-  'kr00014': { name: 'محل الغرب', phone: '0501234572', salesperson: '' },
-  'kr00015': { name: 'محل الشمال', phone: '0501234573', salesperson: '' },
-  'kr00016': { name: 'محل الجنوب', phone: '0501234574', salesperson: '' },
-  'kr00017': { name: 'محل المركز', phone: '0501234575', salesperson: '' },
-  'kr00018': { name: 'محل الحياة', phone: '0501234576', salesperson: '' },
-  'kr00019': { name: 'محل الأسرة', phone: '0501234577', salesperson: '' },
-  'kr00020': { name: 'محل الصداقة', phone: '0501234578', salesperson: '' },
+  'kr00001': { name: 'محل الريحان', phone: '0501234567' },
+  'kr00002': { name: 'محل النوره', phone: '0502345678' },
+  'kr00003': { name: 'محل الرفعة', phone: '0503456789' },
+  'kr00004': { name: 'محل الجود', phone: '0504567890' },
+  'kr00005': { name: 'محل النقاء', phone: '0505678901' },
+  'kr00006': { name: 'محل الفرح', phone: '0506789012' },
+  'kr00007': { name: 'محل البركة', phone: '0507890123' },
+  'kr00008': { name: 'محل الأمل', phone: '0508901234' },
+  'kr00009': { name: 'محل النور', phone: '0509012345' },
+  'kr00010': { name: 'محل القمة', phone: '0501234568' },
+  'kr00011': { name: 'محل النجم', phone: '0501234569' },
+  'kr00012': { name: 'محل الزهرة', phone: '0501234570' },
+  'kr00013': { name: 'محل الشرق', phone: '0501234571' },
+  'kr00014': { name: 'محل الغرب', phone: '0501234572' },
+  'kr00015': { name: 'محل الشمال', phone: '0501234573' },
+  'kr00016': { name: 'محل الجنوب', phone: '0501234574' },
+  'kr00017': { name: 'محل المركز', phone: '0501234575' },
+  'kr00018': { name: 'محل الحياة', phone: '0501234576' },
+  'kr00019': { name: 'محل الأسرة', phone: '0501234577' },
+  'kr00020': { name: 'محل الصداقة', phone: '0501234578' },
 };
+
+// ============================================
+// 2. قائمة المندوبين
+// ============================================
 
 const salespeople = [
   'نوزاد فاروق',
@@ -536,7 +524,7 @@ const salespeople = [
 ];
 
 // ============================================
-// 2. المتغيرات الأساسية
+// 3. المتغيرات الأساسية
 // ============================================
 
 let isOnline = navigator.onLine;
@@ -549,22 +537,28 @@ let tourData = {
 
 localStorage.setItem('userId', userId);
 
-// تحميل البيانات من localStorage
+// ============================================
+// 4. تحميل البيانات
+// ============================================
+
 function loadTourData() {
   const saved = localStorage.getItem('currentTour');
   if (saved) {
-    tourData = JSON.parse(saved);
-    currentTourId = tourData.tourId;
+    try {
+      tourData = JSON.parse(saved);
+      currentTourId = tourData.tourId;
+    } catch (e) {
+      console.error('خطأ في تحميل البيانات المحفوظة');
+    }
   }
 }
 
-// حفظ البيانات في localStorage
 function saveTourData() {
   localStorage.setItem('currentTour', JSON.stringify(tourData));
 }
 
 // ============================================
-// 3. تحديث حالة الاتصال
+// 5. حالة الاتصال
 // ============================================
 
 window.addEventListener('online', () => {
@@ -594,21 +588,32 @@ function updateStatusBar() {
 }
 
 // ============================================
-// 4. تحميل قائمة المندوبين
+// 6. تحميل المندوبين
 // ============================================
 
 function loadSalespeople() {
   const select = document.getElementById('salesperson');
-  salespeople.forEach(name => {
-    const option = document.createElement('option');
-    option.value = name;
-    option.textContent = name;
-    select.appendChild(option);
-  });
+  
+  if (!select) {
+    console.error('❌ عنصر المندوبين غير موجود');
+    return;
+  }
+  
+  try {
+    salespeople.forEach(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    });
+    console.log('✅ تم تحميل ' + salespeople.length + ' مندوب');
+  } catch (error) {
+    console.error('❌ خطأ في تحميل المندوبين:', error);
+  }
 }
 
 // ============================================
-// 5. البحث عن بيانات المحل
+// 7. البحث عن المحل
 // ============================================
 
 function lookupStore() {
@@ -631,7 +636,7 @@ function lookupStore() {
 }
 
 // ============================================
-// 6. إضافة عميل
+// 8. إضافة عميل
 // ============================================
 
 function addCustomer(event) {
@@ -671,11 +676,11 @@ function addCustomer(event) {
     userId: userId
   };
 
-  // إضافة العميل محلياً
+  // إضافة العميل
   tourData.customers.push(customer);
   saveTourData();
 
-  showMessage('entryMessage', '✅ تم إضافة العميل بنجاح', 'success');
+  showMessage('entryMessage', '✅ تم إضافة العميل بنجاح');
   submitBtn.disabled = false;
   submitBtn.innerHTML = '➕ إضافة العميل';
   document.getElementById('entryForm').reset();
@@ -685,7 +690,7 @@ function addCustomer(event) {
 }
 
 // ============================================
-// 7. تحديث عرض بيانات الجولة
+// 9. تحديث عرض الجولة
 // ============================================
 
 function updateTourDisplay() {
@@ -702,7 +707,6 @@ function updateTourDisplay() {
     return;
   }
 
-  // عرض الملخص
   const totalGifts = tourData.customers.reduce((sum, c) => sum + c.giftCount, 0);
   document.getElementById('customerCount').textContent = tourData.customers.length;
   document.getElementById('totalGifts').textContent = totalGifts;
@@ -710,7 +714,6 @@ function updateTourDisplay() {
   emptyState.style.display = 'none';
   tourActions.style.display = 'block';
 
-  // عرض العملاء
   customersList.innerHTML = tourData.customers.map((customer, index) => `
     <div class="customer-item">
       <button class="remove-btn" onclick="removeCustomer(${index})">✕</button>
@@ -724,7 +727,7 @@ function updateTourDisplay() {
 }
 
 // ============================================
-// 8. حذف عميل
+// 10. حذف عميل
 // ============================================
 
 function removeCustomer(index) {
@@ -736,7 +739,7 @@ function removeCustomer(index) {
 }
 
 // ============================================
-// 9. إنهاء الجولة وطباعة الوصل
+// 11. إنهاء الجولة
 // ============================================
 
 function endTour() {
@@ -745,10 +748,8 @@ function endTour() {
     return;
   }
 
-  // إنشاء الوصل وطباعته
   generateReceipt();
 
-  // تنظيف البيانات بعد الطباعة
   setTimeout(() => {
     if (confirm('هل تريد بدء جولة جديدة؟')) {
       clearTour();
@@ -757,7 +758,7 @@ function endTour() {
 }
 
 // ============================================
-// 10. إنشاء الوصل وطباعته
+// 12. طباعة الوصل
 // ============================================
 
 function generateReceipt() {
@@ -784,7 +785,6 @@ function generateReceipt() {
 
 `;
 
-// طباعة كل وصل مرتين
 for (let copies = 0; copies < 2; copies++) {
 html += `<div class="header"> <div style="margin-bottom: 10px;">📋 وصل هدايا المبيعات</div> <div style="font-size: 12px;">التاريخ: ${now}</div> </div> <table> <thead> <tr> <th>كود المحل</th> <th>اسم المندوب</th> <th>اسم المحل</th> <th>الهاتف</th> <th>المبيعات</th> <th>نوع الهدية</th> <th>العدد</th> </tr> </thead> <tbody> ${tourData.customers.map(c =>`
 <tr>
@@ -808,7 +808,6 @@ if (copies === 0) {
 
 html += ‘</body></html>’;
 
-// فتح النافذة وطباعتها
 const printWindow = window.open(’’, ‘’, ‘height=600,width=900’);
 printWindow.document.write(html);
 printWindow.document.close();
@@ -816,7 +815,7 @@ printWindow.print();
 }
 
 // ============================================
-// 11. مسح الجولة
+// 13. مسح الجولة
 // ============================================
 
 function clearTour() {
@@ -828,16 +827,20 @@ saveTourData();
 updateTourDisplay();
 document.getElementById(‘entryForm’).reset();
 document.getElementById(‘storeInfoContainer’).style.display = ‘none’;
-showMessage(‘entryMessage’, ‘✅ تم مسح جميع البيانات’, ‘success’);
+showMessage(‘entryMessage’, ‘✅ تم مسح جميع البيانات’);
 setTimeout(() => { document.getElementById(‘entryMessage’).innerHTML = ‘’; }, 2000);
 }
 }
 
 // ============================================
-// 12. التبديل بين التبويبات
+// 14. التبديل بين التبويبات
 // ============================================
 
-function switchTab(tabName) {
+function switchTab(tabName, event) {
+if (event) {
+event.preventDefault();
+}
+
 document.querySelectorAll(’.tab-content’).forEach(tab => {
 tab.classList.remove(‘active’);
 });
@@ -846,7 +849,9 @@ btn.classList.remove(‘active’);
 });
 
 document.getElementById(tabName).classList.add(‘active’);
+if (event && event.target) {
 event.target.classList.add(‘active’);
+}
 
 if (tabName === ‘tour’) {
 updateTourDisplay();
@@ -854,17 +859,17 @@ updateTourDisplay();
 }
 
 // ============================================
-// 13. رسائل التنبيهات
+// 15. رسائل
 // ============================================
 
-function showMessage(elementId, message, type) {
+function showMessage(elementId, message, type = ‘success’) {
 const element = document.getElementById(elementId);
 const className = type === ‘error’ ? ‘error-message’ : ‘success-message’;
 element.innerHTML = `<div class="${className}">${message}</div>`;
 }
 
 // ============================================
-// 14. تصدير البيانات
+// 16. تصدير البيانات
 // ============================================
 
 function exportData() {
@@ -885,14 +890,28 @@ URL.revokeObjectURL(url);
 }
 
 // ============================================
-// 15. تهيئة التطبيق
+// 17. تهيئة التطبيق
 // ============================================
 
 window.addEventListener(‘DOMContentLoaded’, () => {
+console.log(‘🎁 جاري تحميل التطبيق…’);
+console.log(‘المندوبين الموجودين:’, salespeople.length);
+console.log(‘المحلات الموجودة:’, Object.keys(storesDatabase).length);
+
 loadTourData();
 loadSalespeople();
 updateStatusBar();
 updateTourDisplay();
+
+// تحديث معلومات التطبيق
+document.getElementById(‘salespeopleCount’).textContent = salespeople.length;
+document.getElementById(‘storesCount’).textContent = Object.keys(storesDatabase).length;
+
+console.log(‘✅ تم تحميل التطبيق بنجاح’);
+
+// تحقق من أن القائمة محملة
+const select = document.getElementById(‘salesperson’);
+console.log(‘عدد الخيارات في القائمة:’, select.options.length);
 });
 </script>
 
