@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -104,12 +103,10 @@ input:focus, select:focus { outline: none; border-color: #1a73e8; box-shadow: 0 
 </div>
 
 <button type="submit" class="button btn-primary">➕ إضافة العميل</button>
-
 </form>
 </div>
 
 <!-- تبويب الجولة -->
-
 <div id="tour" class="tab-content">
 <h2 style="margin-bottom: 20px; font-size: 18px;">ملخص الجولة</h2>
 
@@ -132,7 +129,6 @@ input:focus, select:focus { outline: none; border-color: #1a73e8; box-shadow: 0 
 </div>
 
 <!-- تبويب المعلومات -->
-
 <div id="about" class="tab-content">
 <h2 style="margin-bottom: 20px; font-size: 18px;">معلومات التطبيق</h2>
 <div style="font-size: 14px; line-height: 1.8; color: #666;">
@@ -154,7 +150,6 @@ input:focus, select:focus { outline: none; border-color: #1a73e8; box-shadow: 0 
 <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
 
 <button class="button btn-secondary" onclick="downloadData()" style="margin-top: 20px;">📥 تحميل البيانات</button>
-
 </div>
 </div>
 </div>
@@ -354,66 +349,65 @@ function printReceipt() {
   html += 'th, td { border: 1px solid #333; padding: 8px; text-align: right; }';
   html += 'th { background: #f0f0f0; font-weight: bold; }';
   html += '</style></head><body>';
-
-html += ’<div style="text-align: center; margin-bottom: 20px;"><h2>وصل هدايا المبيعات</h2><p>التاريخ: ’ + now + ‘</p></div>’;
-html += ‘<table><tr><th>كود</th><th>المندوب</th><th>المحل</th><th>الهاتف</th><th>مبيعات</th><th>هدية</th><th>عدد</th></tr>’;
-
-for (var i = 0; i < tourData.length; i++) {
-var c = tourData[i];
-html += ‘<tr><td>’ + c.storeCode + ‘</td><td>’ + c.salesperson + ‘</td><td>’ + c.storeName + ‘</td>’;
-html += ‘<td>’ + c.phone + ‘</td><td>’ + c.salesCount + ‘</td><td>’ + c.giftType + ‘</td><td>’ + c.giftCount + ‘</td></tr>’;
-}
-
-html += ‘</table></body></html>’;
-
-var w = window.open(’’, ‘’, ‘height=600,width=900’);
-w.document.write(html);
-w.document.close();
-w.print();
+  html += '<div style="text-align: center; margin-bottom: 20px;"><h2>وصل هدايا المبيعات</h2><p>التاريخ: ' + now + '</p></div>';
+  html += '<table><tr><th>كود</th><th>المندوب</th><th>المحل</th><th>الهاتف</th><th>مبيعات</th><th>هدية</th><th>عدد</th></tr>';
+  
+  for (var i = 0; i < tourData.length; i++) {
+    var c = tourData[i];
+    html += '<tr><td>' + c.storeCode + '</td><td>' + c.salesperson + '</td><td>' + c.storeName + '</td>';
+    html += '<td>' + c.phone + '</td><td>' + c.salesCount + '</td><td>' + c.giftType + '</td><td>' + c.giftCount + '</td></tr>';
+  }
+  
+  html += '</table></body></html>';
+  
+  var w = window.open('', '', 'height=600,width=900');
+  w.document.write(html);
+  w.document.close();
+  w.print();
 }
 
 function clearTour() {
-if (confirm(‘هل تريد مسح جميع البيانات؟’)) {
-tourData = [];
-localStorage.removeItem(‘tourData’);
-updateTourDisplay();
-document.getElementById(‘entryForm’).reset();
-document.getElementById(‘storeInfoContainer’).style.display = ‘none’;
-alert(‘تم مسح جميع البيانات’);
-}
+  if (confirm('هل تريد مسح جميع البيانات؟')) {
+    tourData = [];
+    localStorage.removeItem('tourData');
+    updateTourDisplay();
+    document.getElementById('entryForm').reset();
+    document.getElementById('storeInfoContainer').style.display = 'none';
+    alert('تم مسح جميع البيانات');
+  }
 }
 
 function saveTourData() {
-localStorage.setItem(‘tourData’, JSON.stringify(tourData));
+  localStorage.setItem('tourData', JSON.stringify(tourData));
 }
 
 function loadTourData() {
-var saved = localStorage.getItem(‘tourData’);
-if (saved) {
-try {
-tourData = JSON.parse(saved);
-} catch (e) {
-tourData = [];
-}
-}
+  var saved = localStorage.getItem('tourData');
+  if (saved) {
+    try {
+      tourData = JSON.parse(saved);
+    } catch (e) {
+      tourData = [];
+    }
+  }
 }
 
 function downloadData() {
-var data = JSON.stringify(tourData, null, 2);
-var blob = new Blob([data], { type: ‘application/json’ });
-var url = URL.createObjectURL(blob);
-var a = document.createElement(‘a’);
-a.href = url;
-a.download = ‘tour-data.json’;
-a.click();
+  var data = JSON.stringify(tourData, null, 2);
+  var blob = new Blob([data], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'tour-data.json';
+  a.click();
 }
 
 // ===== التهيئة =====
 
 window.onload = function() {
-loadTourData();
-loadSalespeople();
-updateTourDisplay();
+  loadTourData();
+  loadSalespeople();
+  updateTourDisplay();
 };
 </script>
 
