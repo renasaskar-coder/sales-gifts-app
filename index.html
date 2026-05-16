@@ -21,7 +21,6 @@ body { font-family: Arial, sans-serif; background: #667eea; min-height: 100vh; p
 label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
 input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; direction: rtl; text-align: right; }
 input:focus, select:focus { outline: none; border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1); }
-.auto-field { background: #e8f0fe; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 14px; text-align: right; }
 .button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 10px; transition: all 0.3s; }
 .btn-primary { background: #1a73e8; color: white; }
 .btn-primary:hover { opacity: 0.9; }
@@ -67,16 +66,17 @@ input:focus, select:focus { outline: none; border-color: #1a73e8; box-shadow: 0 
 
 <div class="form-group">
 <label>كود المحل (kr#####) *</label>
-<input type="text" id="storeCode" placeholder="مثال: kr00001" required oninput="searchStore()">
+<input type="text" id="storeCode" placeholder="مثال: kr00001" required>
 </div>
 
-<div id="storeInfoContainer" style="display:none;">
-<div class="auto-field">
-<strong>اسم المحل:</strong> <span id="storeName"></span>
+<div class="form-group">
+<label>اسم المحل *</label>
+<input type="text" id="storeName" placeholder="أدخل اسم المحل" required>
 </div>
-<div class="auto-field">
-<strong>الهاتف:</strong> <span id="storePhone"></span>
-</div>
+
+<div class="form-group">
+<label>رقم الهاتف *</label>
+<input type="text" id="storePhone" placeholder="أدخل رقم الهاتف" required>
 </div>
 
 <div class="form-group">
@@ -141,7 +141,7 @@ input:focus, select:focus { outline: none; border-color: #1a73e8; box-shadow: 0 
 <p><strong>المميزات:</strong></p>
 <ul style="margin-right: 20px; margin-top: 10px;">
 <li>✅ العمل بدون إنترنت</li>
-<li>✅ البحث التلقائي عن المحلات</li>
+<li>✅ إدخال البيانات يدويا</li>
 <li>✅ طباعة الوصلات</li>
 <li>✅ تصدير البيانات</li>
 <li>✅ واجهة سهلة الاستخدام</li>
@@ -180,29 +180,6 @@ var salespeople = [
   'محمود'
 ];
 
-var stores = {
-  'kr00001': { name: 'محل الريحان', phone: '0501234567' },
-  'kr00002': { name: 'محل النوره', phone: '0502345678' },
-  'kr00003': { name: 'محل الرفعة', phone: '0503456789' },
-  'kr00004': { name: 'محل الجود', phone: '0504567890' },
-  'kr00005': { name: 'محل النقاء', phone: '0505678901' },
-  'kr00006': { name: 'محل الفرح', phone: '0506789012' },
-  'kr00007': { name: 'محل البركة', phone: '0507890123' },
-  'kr00008': { name: 'محل الأمل', phone: '0508901234' },
-  'kr00009': { name: 'محل النور', phone: '0509012345' },
-  'kr00010': { name: 'محل القمة', phone: '0501234568' },
-  'kr00011': { name: 'محل النجم', phone: '0501234569' },
-  'kr00012': { name: 'محل الزهرة', phone: '0501234570' },
-  'kr00013': { name: 'محل الشرق', phone: '0501234571' },
-  'kr00014': { name: 'محل الغرب', phone: '0501234572' },
-  'kr00015': { name: 'محل الشمال', phone: '0501234573' },
-  'kr00016': { name: 'محل الجنوب', phone: '0501234574' },
-  'kr00017': { name: 'محل المركز', phone: '0501234575' },
-  'kr00018': { name: 'محل الحياة', phone: '0501234576' },
-  'kr00019': { name: 'محل الأسرة', phone: '0501234577' },
-  'kr00020': { name: 'محل الصداقة', phone: '0501234578' }
-};
-
 var tourData = [];
 
 // ===== الوظائف الأساسية =====
@@ -230,36 +207,18 @@ function loadSalespeople() {
   }
 }
 
-function searchStore() {
-  var code = document.getElementById('storeCode').value.toLowerCase();
-  var container = document.getElementById('storeInfoContainer');
-  
-  if (code.length < 8) {
-    container.style.display = 'none';
-    return;
-  }
-  
-  if (stores[code]) {
-    document.getElementById('storeName').textContent = stores[code].name;
-    document.getElementById('storePhone').textContent = stores[code].phone;
-    container.style.display = 'block';
-  } else {
-    container.style.display = 'none';
-  }
-}
-
 function addCustomer(event) {
   event.preventDefault();
   
   var salesperson = document.getElementById('salesperson').value;
-  var storeCode = document.getElementById('storeCode').value.toLowerCase();
-  var storeName = document.getElementById('storeName').textContent;
-  var phone = document.getElementById('storePhone').textContent;
+  var storeCode = document.getElementById('storeCode').value;
+  var storeName = document.getElementById('storeName').value;
+  var phone = document.getElementById('storePhone').value;
   var salesCount = document.getElementById('salesCount').value;
   var giftType = document.getElementById('giftType').value;
   var giftCount = document.getElementById('giftCount').value;
   
-  if (!salesperson || !storeCode || !storeName || !salesCount || !giftType || !giftCount) {
+  if (!salesperson || !storeCode || !storeName || !phone || !salesCount || !giftType || !giftCount) {
     document.getElementById('entryMessage').innerHTML = '<div class="error-message">الرجاء ملء جميع الحقول</div>';
     return;
   }
@@ -280,7 +239,6 @@ function addCustomer(event) {
   
   document.getElementById('entryMessage').innerHTML = '<div class="success-message">تم إضافة العميل بنجاح</div>';
   document.getElementById('entryForm').reset();
-  document.getElementById('storeInfoContainer').style.display = 'none';
   updateTourDisplay();
   
   setTimeout(function() {
@@ -372,7 +330,6 @@ function clearTour() {
     localStorage.removeItem('tourData');
     updateTourDisplay();
     document.getElementById('entryForm').reset();
-    document.getElementById('storeInfoContainer').style.display = 'none';
     alert('تم مسح جميع البيانات');
   }
 }
