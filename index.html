@@ -377,18 +377,22 @@ updateTourDisplay();
 
 <!-- Firebase Scripts -->
 
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-
+<script>
+// ===== تهيئة Firebase =====
 <script>
 // ===== تهيئة Firebase =====
 const firebaseConfig = {
   apiKey: "AIzaSyB401UuTPDdPDPsSWzyJyOdp8R9g4n2oEI",
   authDomain: "sales-gifts-app.firebaseapp.com",
-  databaseURL: "https://sales-gifts-app-default-rtdb.firebaseio.com",
+  databaseURL: "ht<script>
+// ===== تهيئة Firebase =====
+const firebaseConfig = {
+  apiKey: "AIzaSyB401UuTPDdPDPsSWzyJyOdp8R9g4n2oEI",
+  authDomain: "tps://sales-gifts-app-default-rtdb.firebaseio.com",
   projectId: "sales-gifts-app",
   storageBucket: "sales-gifts-app.firebasestorage.app",
   messagingSenderId: "16013682466",
@@ -398,6 +402,52 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
+// تسجيل دخول مجهول
+firebase.auth().signInAnonymously()
+.then(() => {
+  console.log('✅ Firebase Connected');
+})
+.catch(error => {
+  console.error('Firebase Auth Error:', error);
+});
+
+// إرسال البيانات إلى Firebase
+function sendToFirebase() {
+  if (tourData.length === 0) {
+    alert('لا توجد بيانات للإرسال');
+    return;
+  }
+
+  const tourId = 'tour_' + Date.now();
+
+  const customersData = {};
+
+  tourData.forEach((customer, index) => {
+    customersData['customer_' + index] = {
+      ...customer,
+      salesCount: parseInt(customer.salesCount),
+      giftCount: parseInt(customer.giftCount),
+      date: new Date().toISOString(),
+      synced: true
+    };
+  });
+
+  db.ref('tours/' + tourId).set({
+    tourId: tourId,
+    customers: customersData,
+    submittedAt: new Date().toISOString()
+  })
+  .then(() => {
+    alert('✅ تم إرسال البيانات إلى لوحة المدير بنجاح');
+    console.log('تم الإرسال:', tourId);
+  })
+  .catch(error => {
+    alert('❌ حدث خطأ: ' + error.message);
+    console.error(error);
+  });
+}
+</script>
 
 // دالة إرسال البيانات إلى Firebase
 function sendToFirebase() {
