@@ -535,12 +535,9 @@ justify-content: center;
 
 <!-- Firebase Scripts -->
 
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script>
 // ============================================
 // 1. تهيئة Firebase
@@ -602,13 +599,13 @@ function loadData() {
 const loadingState = document.getElementById('loadingState');
 const emptyState = document.getElementById('emptyState');
 const table = document.getElementById('dataTable');
-const tableBody = document.getElementById('tableBody');
 
 loadingState.style.display = 'flex';
 emptyState.style.display = 'none';
 table.style.display = 'none';
 
-db.ref('tours').once('value', snapshot => {
+// تحديث مباشر
+ db.ref('tours').on('value', snapshot => {
 allData = [];
 
 snapshot.forEach(tourSnapshot => {
@@ -624,6 +621,30 @@ tourId: tourId
 });
 }
 });
+
+allData.sort((a, b) => {
+return new Date(b.date || 0) - new Date(a.date || 0);
+});
+
+updateStats();
+
+if (allData.length === 0) {
+loadingState.style.display = 'none';
+emptyState.style.display = 'block';
+table.style.display = 'none';
+} else {
+loadingState.style.display = 'none';
+emptyState.style.display = 'none';
+table.style.display = 'table';
+displayTable();
+}
+
+}, error => {
+console.error('خطأ في تحميل البيانات:', error);
+loadingState.style.display = 'none';
+emptyState.style.display = 'block';
+});
+}
 
 // ترتيب البيانات بالتاريخ الأحدث أولاً
 allData.sort((a, b) => new Date(b.date) - new Date(a.date));
